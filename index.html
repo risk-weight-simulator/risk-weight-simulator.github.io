@@ -70,6 +70,8 @@ body.side-open aside { display: grid !important }
   button, select, input[type=number] { min-height: 42px }
   .seg button { min-height: 40px }
   table.het input { min-height: 38px }
+  header h1 { font-size: 26px; gap: 10px }
+  .logo svg { width: 28px; height: 28px }
 }
 aside { font-family: var(--sans); font-size: 17px; display: grid; gap: 12px; border-right: 1px solid var(--rule); padding-right: 22px }
 @media (max-width: 1023px) { aside { padding-right: 16px } }
@@ -199,6 +201,14 @@ a { color: var(--accent) }
 
 .err { color: var(--warn-ink); background: var(--warn-bg); padding: 6px 8px; font-size: 12.5px }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+@media (max-width: 767px) {
+  .headline > div { padding: 12px 8px 14px }
+  .headline .k { font-size: 11px; letter-spacing: 0.03em }
+  .headline .k svg { display: none }
+  .headline .u { font-size: 12px }
+  .crow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px }
+  .cname { grid-column: 1 / -1; min-width: 0 }
+}
 </style>
 <style>
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px) }
@@ -341,8 +351,8 @@ img { max-width: 100% }
   </div>
   <div role="tabpanel" id="panel_cmp" aria-labelledby="tab_cmp" hidden>
   <section class="res tabsec">
-    <div class="tablewrap"><table class="bk" id="cmp">
-      <caption style="caption-side:top;text-align:left;font-size:17px;color:var(--ink-2);padding-bottom:12px"><b style="color:var(--ink);font-weight:600">Table 1.</b> Aggregate effects of all reforms under the same assumptions and calculation. Select a row to show that reform.</caption>
+    <p class="caption" id="cmpcap" style="margin:0 0 12px"><b>Table 1.</b> Aggregate effects of all reforms under the same assumptions and calculation. Select a row to show that reform.</p>
+    <div class="tablewrap"><table class="bk" id="cmp" aria-describedby="cmpcap">
       <thead><tr><th>Reform</th><th>Equity (%)</th><th>Credit (%)</th><th title="Change in the bailout probability, percentage points">Bailout prob. (pp)</th><th>Entrepreneurs</th><th>Households</th><th>Welfare</th></tr></thead><tbody></tbody></table></div>
     <p class="caption">Equity changes as a percentage of required bank equity; credit changes as a percentage of total credit. Bailout probability: change in percentage points from <i>F</i>(<i>z</i>*) = <span class="fz">5</span>%, the local approximation <i>f</i>(<i>z</i>*)·Δ<i>z</i>*; move the cursor over a value to see the percentage change. Welfare in EUR 1,000 per loan. Banks earn zero profits under competition. Aggregate welfare weights banks, entrepreneurs and households equally.</p>
   </section>
@@ -805,7 +815,7 @@ function reset() {
   baseKey = JSON.stringify(engineInputs());
 }
 document.querySelectorAll('[data-h]').forEach(b => b.addEventListener('click', () => { state.het = b.dataset.h === '1'; syncHet(); schedule(); }));
-$('reset').addEventListener('click', () => { reset(); setSide(false); document.querySelectorAll('aside details').forEach(d => d.open = false); schedule(); });
+$('reset').addEventListener('click', () => { reset(); setSide(false); $('calsec').hidden = true; document.querySelectorAll('aside details').forEach(d => d.open = false); schedule(); });
 $('reform').addEventListener('change', e => { state.reform = e.target.value; schedule(); });
 document.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => {
   state.method = b.dataset.m; document.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); schedule(); }));
@@ -814,7 +824,7 @@ $('showcal').addEventListener('click', () => { $('calsec').hidden = false; if (m
 $('hidecal').addEventListener('click', () => { $('calsec').hidden = true; });
 function setSide(open) { document.body.classList.toggle('side-open', open); $('toggleside').setAttribute('aria-expanded', String(open)); $('toggleside').textContent = open ? 'Hide assumptions' : 'Change assumptions'; if (open && innerWidth >= 768) $('controls').scrollIntoView({ block: 'nearest' });
   if (open && innerWidth < 768) { const y = $('tiles').getBoundingClientRect().top + scrollY - $('strip').offsetHeight - 8; scrollTo({ top: y }); } }   // phones: keep the headline numbers visible above the sheet
-$('applyside').addEventListener('click', () => setSide(false));
+$('applyside').addEventListener('click', () => { setSide(false); $('calsec').hidden = true; });
 $('strip').querySelector('.logo').innerHTML = document.querySelector('header .logo').innerHTML;
 new IntersectionObserver(es => { $('strip').classList.toggle('show', !es[0].isIntersecting); }).observe(document.querySelector('header h1'));
 $('toggleside').addEventListener('click', () => setSide(!document.body.classList.contains('side-open')));
