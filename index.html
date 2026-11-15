@@ -201,6 +201,21 @@ a { color: var(--accent) }
 .bibwrap pre { margin: 0; padding: 12px 14px; overflow-x: auto; font: 14px/1.5 ui-monospace, "SFMono-Regular", Consolas, monospace; color: var(--ink) }
 
 .err { color: var(--warn-ink); background: var(--warn-bg); padding: 6px 8px; font-size: 12.5px }
+button.q { flex: none; width: 19px; height: 19px; min-height: 0; padding: 0; border-radius: 50%; border: 1px solid var(--ink-3); background: transparent; color: var(--ink-3);
+  font: 600 12px/17px var(--sans); text-align: center; letter-spacing: 0; text-transform: none; vertical-align: middle }
+button.q:hover, button.q[aria-expanded=true] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink) }
+.ctl > label.hasq { align-items: flex-start }
+.ctl > label.hasq .lt { flex: 1 1 auto; min-width: 0 }
+.ctl > label.hasq .nw { white-space: nowrap }
+.ctl > label.hasq .sym { margin-left: 2px }
+.ctl > label.hasq button.q { margin-top: 2px }
+.c-calc > label { justify-content: flex-start; align-items: center; gap: 6px }
+.linkbtn { font: inherit; color: var(--accent); background: none; border: 0; padding: 0; min-height: 0; text-decoration: underline; cursor: pointer }
+.segrow { display: flex; align-items: center; gap: 8px }
+.headline .k button.q { margin-left: 1px }
+.pop { position: absolute; z-index: 60; width: max-content; max-width: min(340px, calc(100vw - 32px)); background: var(--paper); color: var(--ink-2); border: 1px solid var(--rule);
+  box-shadow: 0 4px 16px rgba(0,0,0,.16); padding: 10px 13px; font: 15px/1.45 var(--sans); text-wrap: pretty }
+.pop p { margin: 0 } .pop p + p { margin-top: 6px } .pop b { color: var(--ink); font-weight: 600 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important } }
 @media (max-width: 767px) {
   .headline > div { padding: 12px 8px 14px }
@@ -209,7 +224,10 @@ a { color: var(--accent) }
   .headline .u { font-size: 12px }
   .crow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px }
   .cname { grid-column: 1 / -1; min-width: 0 }
+  button.q { width: 24px; height: 24px; min-height: 0; font-size: 13px; line-height: 22px }
+  .headline .k button.q { width: 20px; height: 20px; line-height: 18px; font-size: 12px }
 }
+@media (max-width: 419px) { .headline .v { font-size: 34px } }
 </style>
 <style>
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px) }
@@ -224,8 +242,8 @@ img { max-width: 100% }
 <header>
   <h1><span class="logo"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6.4" fill="#234D79"/><path d="M7 6.5V25H25.5" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.6 23.4C9.3 15 13.5 10.4 25 8.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>Risk Weight Simulator</h1>
   <p>Effects of replacing the Basel III internal ratings‑based (IRBA) risk weights on corporate loans with an alternative schedule, such as the Basel III Endgame proposal (65% for investment‑grade loans, 100% otherwise).</p>
-  <p>Based on the German calibration in Maximilian Jager and Karl Schulz, <i>Nonlinear Bank Capital Regulation</i> (2026). Competitive banking; all effects are measured relative to the current IRBA schedule.</p>
-  <p class="cite"><a href="https://drive.google.com/file/d/1gWIlKs8f74dNEKbL3XkxwxFksfOj9e98/view" target="_blank" rel="noopener">Read the paper</a> · <a href="#cite">How to cite</a></p>
+  <p>Calibrated to German corporate lending in Maximilian Jager and Karl Schulz, <i>Nonlinear Bank Capital Regulation</i> (2026). Competitive banking; all effects are measured relative to the current IRBA schedule.</p>
+  <p class="cite"><a href="https://drive.google.com/file/d/1gWIlKs8f74dNEKbL3XkxwxFksfOj9e98/view" target="_blank" rel="noopener">Read the paper</a> · <a href="#cite">How to cite</a> · <button type="button" class="linkbtn" id="copylink">Copy link</button></p>
 </header>
 
 <div class="layout">
@@ -262,13 +280,13 @@ img { max-width: 100% }
     <summary>Behavioral responses</summary>
     <div class="sec">
       <div class="grp"><h3>Credit responses</h3>
-        <div class="seg small" role="group" aria-label="Credit elasticities">
+        <div class="segrow"><div class="seg small" role="group" aria-label="Credit elasticities">
           <button type="button" data-h="0" aria-pressed="true">Uniform</button>
           <button type="button" data-h="1" aria-pressed="false">By rating group</button>
-        </div>
+        </div><button type="button" class="q" data-help="het" aria-label="Explain: by rating group" aria-expanded="false">?</button></div>
         <div id="uni" class="grp">
-          <div class="ctl" data-key="zu" data-min="-0.55" data-max="-0.001" data-step="0.001"><label>Credit in the risk weight <span class="sym">ζ<sup>k,ω</sup></span></label></div>
-          <div class="ctl" data-key="eku" data-min="-0.2" data-max="0" data-step="0.001"><label>Credit in PD <span class="sym">ε<sup>k,p</sup></span></label></div>
+          <div class="ctl" data-key="zu" data-min="-0.55" data-max="-0.001" data-step="0.001"><label>Credit sensitivity to risk weights <span class="sym">ζ<sup>k,ω</sup></span></label></div>
+          <div class="ctl" data-key="eku" data-min="-0.2" data-max="0" data-step="0.001"><label>Credit sensitivity to default risk <span class="sym">ε<sup>k,p</sup></span></label></div>
         </div>
         <div id="het" hidden>
           <table class="het"><thead><tr><th>Rating group</th><th><span class="sym">ζ<sup>k,ω</sup></span></th><th><span class="sym">ε<sup>k,p</sup></span></th></tr></thead>
@@ -277,7 +295,7 @@ img { max-width: 100% }
         </div>
       </div>
       <div class="grp"><h3>Risk response</h3>
-        <div class="ctl" data-key="eps_p_k" data-min="-1" data-max="2.5" data-step="0.01"><label>PD in credit <span class="sym">ε<sup>p,k</sup></span></label></div>
+        <div class="ctl" data-key="eps_p_k" data-min="-1" data-max="2.5" data-step="0.01"><label>Default‑risk sensitivity to credit <span class="sym">ε<sup>p,k</sup></span></label></div>
       </div>
     </div>
   </details>
@@ -301,7 +319,7 @@ img { max-width: 100% }
 <main>
   <div class="ctrlbar">
     <div class="ctl c-ass" style="min-width:0"><label>Assumptions</label>
-      <div class="nrow"><button type="button" id="toggleside" aria-expanded="false" aria-controls="controls">Change assumptions</button><span class="chip" id="modchip">baseline calibration</span></div></div>
+      <div class="nrow"><button type="button" id="toggleside" aria-expanded="false" aria-controls="controls">Change assumptions</button><span class="chip" id="modchip">German baseline</span></div></div>
     <div class="ctl c-ref"><label for="reform">Reform</label>
       <select id="reform">
         <option value="fed">Fed proposal (65% / 100%)</option>
@@ -314,10 +332,10 @@ img { max-width: 100% }
         <option value="iso">Best isoelastic</option>
         <option value="fb">Optimal schedule</option>
       </select></div>
-    <div class="ctl c-calc" style="min-width:0"><label>Calculation</label>
+    <div class="ctl c-calc" style="min-width:0"><label>Calculation <button type="button" class="q" data-help="calc" aria-label="Explain: calculation" aria-expanded="false">?</button></label>
       <div class="seg" role="group" aria-label="Calculation">
-        <button type="button" data-m="fo" aria-pressed="false">First order</button>
-        <button type="button" data-m="lr" aria-pressed="true">Large reform</button>
+        <button type="button" data-m="fo" aria-pressed="false">Approximation</button>
+        <button type="button" data-m="lr" aria-pressed="true">Full simulation</button>
       </div></div>
     <div class="ctl" id="nctl" style="min-width:0"><label for="nsteps">Steps <i>N</i></label>
       <div class="nrow"><input type="number" id="nsteps" min="2" max="400" step="2" value="10"><span class="hint">exact: <i>N</i> → ∞</span></div></div>
@@ -344,9 +362,9 @@ img { max-width: 100% }
 
   <div class="tabs" role="tablist" aria-label="Results">
     <button type="button" role="tab" id="tab_rw" aria-controls="panel_rw" aria-selected="true">Risk weights</button>
-    <button type="button" role="tab" id="tab_cmp" aria-controls="panel_cmp" aria-selected="false" tabindex="-1">Aggregate effects</button>
     <button type="button" role="tab" id="tab_credit" aria-controls="panel_credit" aria-selected="false" tabindex="-1">Credit effects</button>
     <button type="button" role="tab" id="tab_welfare" aria-controls="panel_welfare" aria-selected="false" tabindex="-1">Welfare effects</button>
+    <button type="button" role="tab" id="tab_cmp" aria-controls="panel_cmp" aria-selected="false" tabindex="-1">Compare reforms</button>
   </div>
   <div class="figs one" role="tabpanel" id="panel_rw" aria-labelledby="tab_rw">
     <figure class="res"><div class="chart" id="ch_w"></div><figcaption class="caption"><b>Figure 1.</b> Risk weight <i>ω</i>(<i>p</i>) by probability of default. Dotted lines mark the rating‑group cutoffs.</figcaption></figure>
@@ -360,7 +378,7 @@ img { max-width: 100% }
   </section>
   </div>
   <div class="figs one" role="tabpanel" id="panel_credit" aria-labelledby="tab_credit" hidden>
-    <figure class="res"><div class="chart" id="ch_k"></div><figcaption class="caption"><b>Figure 2.</b> Change in credit by the loan's initial probability of default, large reform and first order.</figcaption></figure>
+    <figure class="res"><div class="chart" id="ch_k"></div><figcaption class="caption"><b>Figure 2.</b> Change in credit by the loan's initial probability of default, full simulation and approximation.</figcaption></figure>
   </div>
   <div class="figs" role="tabpanel" id="panel_welfare" aria-labelledby="tab_welfare" hidden>
     <figure class="res"><div class="chart" id="ch_t"></div><figcaption class="caption"><b>Figure 3.</b> Total welfare change per loan by initial probability of default.</figcaption></figure>
@@ -370,8 +388,8 @@ img { max-width: 100% }
   <details class="notes">
     <summary>Methodology</summary>
     <div>
-      <p><b>First order.</b> Gateaux derivatives at the IRBA schedule, applied to the full schedule change. First-order welfare is linear in the change, so it scales with the size of the reform.</p>
-      <p><b>Large reform.</b> The reform is split into <i>N</i> steps, and at each step every loan solves its credit and risk response. Results are extrapolated to <i>N</i> → ∞ from <i>N</i> and <i>N</i>/2 steps.</p>
+      <p><b>Approximation.</b> Gateaux derivatives at the IRBA schedule, applied to the full schedule change. First-order welfare is linear in the change, so it scales with the size of the reform.</p>
+      <p><b>Full simulation.</b> The reform is split into <i>N</i> steps, and at each step every loan solves its credit and risk response. Results are extrapolated to <i>N</i> → ∞ from <i>N</i> and <i>N</i>/2 steps.</p>
       <p><b>Fed proposal.</b> Risk weight 65% for investment‑grade corporate loans and 100% for all others, as in the Basel III Endgame proposals of 2023 and March 2026.</p>
       <p><b>Best simple schedules.</b> The flat, two‑rating, linear and isoelastic schedules with the highest welfare at the baseline calibration. Two ratings weights each borrower by its investment‑grade share. Under changed assumptions they keep these parameters.</p>
       <p><b>Optimal schedule.</b> The risk weight of each loan equals the marginal welfare externality of its credit, <i>b</i>(<i>p</i>), shown in Figure A4.</p>
@@ -807,7 +825,86 @@ document.querySelectorAll('.ctl[data-key]').forEach(el => {
   const on = v => { state.inp[key] = v; if (key === 'eps_p_k') state.epsAuto = false; schedule(); };
   if (rg) rg.addEventListener('input', () => { nb.value = rg.value; on(+rg.value); });
   nb.addEventListener('change', () => { const v = +nb.value; if (Number.isFinite(v)) { if (rg) rg.value = v; on(v); } });
-  ctls[key] = { set, rg, nb };
+  ctls[key] = { set, rg, nb, name: lab ? lab.textContent.replace(/\s+/g, ' ').trim() : '' };
+});
+
+// ---------- "?" explanations ----------
+const HELP = {
+  calc: '<p><b>Approximation.</b> Linear approximation around the current IRBA schedule. Welfare scales one‑for‑one with the size of the reform.</p><p><b>Full simulation.</b> The reform is applied in <i>N</i> small steps, and at each step every loan adjusts its credit and default risk. Results are extrapolated to infinitely many steps.</p>',
+  welfare: 'Change in aggregate welfare, in EUR 1,000 per loan. Aggregate welfare weights banks, entrepreneurs and households equally.',
+  mu_log_p: 'Average log probability of default across loans. Baseline −5.52, a median PD of about 0.4%, from the German credit registry.',
+  sigma_log_p: 'Dispersion of default risk across loans. Baseline 1.64, fitted to the 1st to 99th percentiles of log PD in the German credit registry.',
+  mean_k: 'Average loan size. Baseline 9,728, that is EUR 9.7 million.',
+  mu_log_k_eur: 'Average log loan size. Together with mean credit it sets the dispersion of loan sizes. Baseline 14.77, from the German credit registry.',
+  rho: 'Correlation between a loan’s log PD and its log size. Negative values give riskier borrowers smaller loans. Baseline −0.3.',
+  LGD: 'Share of the loan lost when the borrower defaults. Enters the IRBA risk‑weight formula. Baseline 45%.',
+  M: 'Loan maturity in the IRBA risk‑weight formula. Baseline 5 years.',
+  Omega: 'Minimum ratio of bank equity to risk‑weighted assets. Baseline 8%, the current minimum.',
+  S_IG: 'Share of investment‑grade borrowers, who receive 65% under the Fed proposal. Baseline 57% (Vanhaverbeke, Balsmeier and Doherr, 2022).',
+  zu: 'How strongly banks cut credit when a loan’s risk weight rises. For example, −0.35 means a 10 percentage point higher risk weight lowers credit supply by 3.5%. Baseline −0.349, estimated from the 2020 SME Supporting Factor reform in Germany. Estimates for France range from −0.23 to −0.45 (Fraisse, Lé and Thesmar, 2020).',
+  eku: 'Percent change in credit supply when the borrower’s PD rises by 1%, at a given risk weight. Baseline −0.089, estimated from differences in PD estimates across banks lending to the same firm.',
+  eps_p_k: 'Percent change in the borrower’s PD when credit rises by 1%. Baseline 1.36, from the estimate that 10% more credit raises the PD by 0.19 percentage points (German bank levy, 2011), divided by the mean PD.',
+  het: 'Separate elasticities for the four rating groups AAA to AA−, A+ to A−, BBB+ to BB−, and below BB−.',
+  kappa_T: 'Deadweight cost of each euro of bailout paid by taxpayers. Baseline 0.30.',
+  F_z_star: 'Probability that a macroeconomic shock triggers a bailout. Baseline 5%, from quarterly DAX returns 2005–2022.',
+  r: 'Loan interest rate, which sets the bank’s value in a bailout. Baseline 4.68% (Corbae and D’Erasmo, 2021).',
+  post_liquid: 'Share of loan value lost when a failed bank’s loan portfolio is liquidated. Baseline 19.65% (Corbae and D’Erasmo, 2021).'
+};
+const qBtn = key => { const b = document.createElement('button'); b.type = 'button'; b.className = 'q'; b.dataset.help = key; b.textContent = '?'; b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-label', 'Explain'); return b; };
+document.querySelectorAll('.ctl[data-key]').forEach(el => {   // label = [text symbol][?]; the last word stays on one line with the symbol
+  const key = el.dataset.key, lab = el.querySelector('label'); if (!HELP[key] || !lab) return;
+  const sym = lab.querySelector('.sym'), cl = lab.cloneNode(true); cl.querySelectorAll('.sym').forEach(s => s.remove());
+  const txt = cl.textContent.replace(/\s+/g, ' ').trim();
+  const cut = txt.lastIndexOf(' '), lt = document.createElement('span'); lt.className = 'lt';
+  const tail = document.createElement('span'); tail.className = 'nw'; tail.textContent = txt.slice(cut + 1);
+  lt.append(document.createTextNode(cut > 0 ? txt.slice(0, cut + 1) : ''), tail);
+  if (sym) tail.append(document.createTextNode(' '), sym);
+  lab.textContent = ''; lab.append(lt, qBtn(key)); lab.classList.add('hasq');
+});
+const pop = document.createElement('div'); pop.className = 'pop'; pop.setAttribute('role', 'note'); pop.hidden = true; document.body.append(pop);
+let popFor = null;
+function closePop() { if (popFor) popFor.setAttribute('aria-expanded', 'false'); popFor = null; pop.hidden = true; }
+function openPop(b) {
+  closePop(); popFor = b; b.setAttribute('aria-expanded', 'true');
+  pop.innerHTML = /^</.test(HELP[b.dataset.help]) ? HELP[b.dataset.help] : '<p>' + HELP[b.dataset.help] + '</p>'; pop.hidden = false;
+  const r = b.getBoundingClientRect(), w = pop.offsetWidth, vw = document.documentElement.clientWidth, box = document.querySelector('.wrap').getBoundingClientRect();
+  const lo = Math.max(16, box.left), hi = Math.min(vw - 16, box.right);   // keep the note inside the page column
+  pop.style.left = (scrollX + Math.max(lo, Math.min(r.left + r.width / 2 - 24, hi - w))) + 'px';
+  const below = r.bottom + 8, h = pop.offsetHeight;
+  pop.style.top = (scrollY + (below + h > innerHeight - 8 && r.top - 8 - h > 8 ? r.top - 8 - h : below)) + 'px';
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('button.q');
+  if (b) { e.preventDefault(); e.stopPropagation(); if (popFor === b) closePop(); else openPop(b); return; }
+  if (!e.target.closest('.pop')) closePop();
+}, true);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && popFor) { const b = popFor; closePop(); b.focus(); } });
+document.addEventListener('scroll', e => { if (popFor && !(e.target.closest && e.target.closest('.pop'))) closePop(); }, true);
+addEventListener('resize', closePop);
+
+// ---------- shareable link: reform, calculation, N and every changed assumption in the query string ----------
+function stateURL() {
+  const q = new URLSearchParams(); q.set('reform', state.reform);
+  if (state.method === 'fo') q.set('calc', 'approx');
+  if (state.method === 'lr' && state.N !== 10) q.set('N', state.N);
+  if (state.het) q.set('groups', '1');
+  Object.keys(ctls).forEach(k => { if (k === 'eps_p_k') return; if (state.inp[k] !== DEF[k]) q.set(k, state.inp[k]); });
+  if (!state.epsAuto) q.set('eps_p_k', state.inp.eps_p_k);
+  return location.pathname + '?' + q.toString();
+}
+function applyURL() {
+  const q = new URLSearchParams(location.search); if (!q.has('reform')) return;
+  if (NAMES[q.get('reform')]) { state.reform = q.get('reform'); $('reform').value = state.reform; }
+  if (q.get('calc') === 'approx') { state.method = 'fo'; document.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.m === 'fo'))); }
+  const N = +q.get('N'); if (q.has('N') && Number.isInteger(N) && N % 2 === 0 && N >= 2 && N <= 400) { state.N = N; $('nsteps').value = N; }
+  if (q.get('groups') === '1') { state.het = true; syncHet(); }
+  Object.keys(ctls).forEach(k => { if (!q.has(k)) return; const v = +q.get(k); if (!Number.isFinite(v)) return; state.inp[k] = v; ctls[k].set(v); if (k === 'eps_p_k') state.epsAuto = false; });
+}
+$('copylink').addEventListener('click', () => {
+  const b = $('copylink'), rel = stateURL(), url = location.origin + rel;
+  try { history.replaceState(null, '', rel); } catch (e) {}
+  const done = ok => { b.textContent = ok ? 'Copied' : 'Copy from address bar'; setTimeout(() => { b.textContent = 'Copy link'; }, 1800); };
+  try { navigator.clipboard.writeText(url).then(() => done(true), () => done(false)); } catch (e) { done(false); }
 });
 function syncHet() { $('uni').hidden = state.het; $('het').hidden = !state.het;
   document.querySelectorAll('[data-h]').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.h === '1') === state.het))); }
@@ -818,7 +915,7 @@ function reset() {
   baseKey = JSON.stringify(engineInputs());
 }
 document.querySelectorAll('[data-h]').forEach(b => b.addEventListener('click', () => { state.het = b.dataset.h === '1'; syncHet(); schedule(); }));
-$('reset').addEventListener('click', () => { reset(); setSide(false); $('calsec').hidden = true; document.querySelectorAll('aside details').forEach(d => d.open = false); schedule(); });
+$('reset').addEventListener('click', () => { reset(); try { if (location.search) history.replaceState(null, '', location.pathname); } catch (e) {} setSide(false); $('calsec').hidden = true; document.querySelectorAll('aside details').forEach(d => d.open = false); schedule(); });
 $('reform').addEventListener('change', e => { state.reform = e.target.value; schedule(); });
 document.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => {
   state.method = b.dataset.m; document.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); schedule(); }));
@@ -832,7 +929,7 @@ $('strip').querySelector('.logo').innerHTML = document.querySelector('header .lo
 new IntersectionObserver(es => { $('strip').classList.toggle('show', !es[0].isIntersecting); }).observe(document.querySelector('header h1'));
 $('toggleside').addEventListener('click', () => setSide(!document.body.classList.contains('side-open')));
 $('closeside').addEventListener('click', () => setSide(false));
-const TABS = [['tab_rw', 'panel_rw'], ['tab_cmp', 'panel_cmp'], ['tab_credit', 'panel_credit'], ['tab_welfare', 'panel_welfare']];
+const TABS = [['tab_rw', 'panel_rw'], ['tab_credit', 'panel_credit'], ['tab_welfare', 'panel_welfare'], ['tab_cmp', 'panel_cmp']];
 function showTab(id) { TABS.forEach(([b, p]) => { const on = b === id; $(b).setAttribute('aria-selected', String(on)); $(b).tabIndex = on ? 0 : -1; $(p).hidden = !on; }); if (mainMsg) drawCharts(mainMsg); }
 TABS.forEach(([b], i) => { $(b).addEventListener('click', () => showTab(b));
   $(b).addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const j = (i + (e.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length; showTab(TABS[j][0]); $(TABS[j][0]).focus(); } }); });
@@ -868,7 +965,7 @@ function check(o) {
   for (const [k, c] of Object.entries(ctls)) {
     if (c.nb.disabled || c.nb.closest('[hidden]')) continue;
     const v = +c.nb.value, lo = +c.nb.min, hi = +c.nb.max, lab = c.nb.closest('.ctl').querySelector('label');
-    if (!(Number.isFinite(v) && v >= lo && v <= hi)) return `${lab ? lab.textContent.replace(/\s+/g, ' ').trim() : (c.nb.getAttribute('aria-label') || k)} must lie between ${lo} and ${hi}.`;
+    if (!(Number.isFinite(v) && v >= lo && v <= hi)) return `${c.name || c.nb.getAttribute('aria-label') || k} must lie between ${lo} and ${hi}.`;
   }
   if (state.method === 'lr' && !(Number.isInteger(state.N) && state.N % 2 === 0 && state.N >= 2 && state.N <= 400)) return 'Steps N must be an even integer between 2 and 400.';
   if (!(Math.log(o.mean_k) > o.mu_log_k)) return 'Mean credit must exceed exp(mean of log credit) for a lognormal. Raise mean credit or lower the mean of log credit.';
@@ -879,8 +976,9 @@ function send() {
   const o = engineInputs(), err = check(o);
   $('inerr').hidden = !err; $('inerr').textContent = err || '';
   $('nctl').hidden = state.method !== 'lr';
-  const mod = baseKey !== JSON.stringify(o) || state.N !== 10; $('modchip').textContent = mod ? 'Modified' : 'baseline calibration'; $('modchip').className = 'chip' + (mod ? ' mod' : '');
+  const mod = baseKey !== JSON.stringify(o) || state.N !== 10; $('modchip').textContent = mod ? 'Modified' : 'German baseline'; $('modchip').className = 'chip' + (mod ? ' mod' : '');
   if (err) { $('status').textContent = 'Results shown are for the last valid inputs.'; return; }
+  try { if (location.search) history.replaceState(null, '', mod ? stateURL() : location.pathname); } catch (e) {}   // a shared link follows later changes
   $('status').textContent = '';
   reqId++; 
   worker.postMessage({ type: 'run', id: reqId, inp: o, reform: state.reform, method: state.method, N: state.N });
@@ -904,24 +1002,26 @@ const KPI_ICONS = {
 const ICON_ORDER = ['equity', 'credit', 'bailout', 'welfare'];
 const F_DENS = 1.2; let F_BASE = 0.05;   // f(z*) fixed (script line 1009); F(z*) from the inputs (line 1007)
 const relP = z => Number.isFinite(z) ? `Percent change: ${fmt(100 * F_DENS * z / F_BASE, 2)}% of the ${+(100 * F_BASE).toFixed(1)}% bailout probability` : '';
-const methodText = q => q.method === 'fo' ? 'first order' : 'large reform';
+const methodText = q => q.method === 'fo' ? 'approximation' : 'full simulation';
 function renderMain(m) {
   const R = m.R;
   const q = m.req, bad = R.unstable, show = (v, d) => bad ? 'invalid' : fmt(v, d);
+  F_BASE = m.Fz; if (popFor && popFor.closest('#tiles')) closePop();
+  const pct = v => (100 * v).toFixed(2) + '%';
   $('restitle').innerHTML = label(q.reform);
   $('ressub').textContent = `Aggregate effects of moving from IRBA (${methodText(q)}).`;
-  const tiles = [['Equity', show(R.E, 2), '% of required bank equity'], ['Credit', show(R.L, 2), '% of credit'], ['Bailout probability', show(100 * F_DENS * R.z, 3), 'pp, local approximation'], ['Welfare', show(R.W, 4), 'EUR 1,000 per loan']];
+  const tiles = [['Equity', show(R.E, 2), '% of required bank equity'], ['Credit', show(R.L, 2), '% of credit'], ['Bailout probability', show(100 * F_DENS * R.z, 3), bad ? 'pp' : `pp, from ${pct(F_BASE)} to ${pct(F_BASE + F_DENS * R.z)}`], ['Welfare', show(R.W, 4), 'EUR 1,000 per loan']];
   const host = $('tiles'); host.textContent = '';
   tiles.forEach(([k, v, u], j) => { const d = document.createElement('div'); if (j === 2 && !bad) d.title = relP(R.z);
     const a = document.createElement('div'); a.className = 'k'; a.textContent = k; a.insertAdjacentHTML('afterbegin', KPI_ICONS[ICON_ORDER[j]]); const b = document.createElement('div'); b.className = 'v'; b.textContent = v;
-    const c = document.createElement('div'); c.className = 'u'; c.textContent = u; d.append(a, b, c); host.append(d); });
+    const c = document.createElement('div'); c.className = 'u'; c.textContent = u; if (j === 3) a.append(qBtn('welfare')); d.append(a, b, c); host.append(d); });
   const w = [];
   if (bad) w.push('Invalid at these inputs: ' + R.reasons.join('; ') + '.');
   $('warn').hidden = !w.length; $('warn').textContent = w.join(' ');
   $('pdstats').textContent = `Implied PD: mean ${(100 * m.meanp).toFixed(2)}%, SD ${(100 * m.sdp).toFixed(2)}%, median ${(100 * m.pmed).toFixed(2)}%`;
   $('kstats').textContent = `Model credit per loan, EUR 1,000: mean ${num(m.kModelMean)}, SD ${num(m.kModelSd)}. SD of log credit ${m.sigma_log_k.toFixed(3)}`;
   if (state.epsAuto) ctls.eps_p_k.set(m.eps_p_k);
-  F_BASE = m.Fz; document.querySelectorAll('.fz').forEach(e => e.textContent = +(100 * m.Fz).toFixed(1));
+  document.querySelectorAll('.fz').forEach(e => e.textContent = +(100 * m.Fz).toFixed(1));
   drawCharts(m); if (!$('calsec').hidden) drawCal(m);
   rows = {}; rows[q.reform] = R; renderTable();
 }
@@ -951,8 +1051,8 @@ function drawCharts(m) {
                           { name: NAMES[sel], color: 'var(--accent)', y: I.map(i => m.schedules[sel][i]) }],
     { scale: 100, suffix: '%', tfmt: v => (100 * v).toFixed(1) + '%', cuts: true, x: PX, ytitle: 'Risk weight ω' });
   if (m.R.unstable) { ['ch_k', 'ch_t', 'ch_v'].forEach(id => figMsg(id, 'Figure omitted: the reform is invalid at these inputs.')); return; }
-  const kser = [{ name: m.req.method === 'fo' ? NAMES[sel] + ', first order' : NAMES[sel] + ', large reform', color: 'var(--accent)', y: I.map(i => 100 * m.R.k_hat[i] / m.k[i]) }];
-  if (m.req.method !== 'fo') kser.unshift({ name: 'First order', color: 'var(--base)', dash: '6 3', y: I.map(i => 100 * m.k_hat_fo[i] / m.k[i]) });
+  const kser = [{ name: m.req.method === 'fo' ? NAMES[sel] + ', approximation' : NAMES[sel] + ', full simulation', color: 'var(--accent)', y: I.map(i => 100 * m.R.k_hat[i] / m.k[i]) }];
+  if (m.req.method !== 'fo') kser.unshift({ name: 'Approximation', color: 'var(--base)', dash: '6 3', y: I.map(i => 100 * m.k_hat_fo[i] / m.k[i]) });
   lineChart($('ch_k'), P, kser, { tfmt: v => v.toFixed(2) + '%', zero: true, x: PX, ytitle: 'Change in credit (%)' });
   lineChart($('ch_t'), P, [{ name: 'Total', color: 'var(--accent)', y: I.map(i => m.R.Wi[i]) }],
     { tfmt: v => v.toFixed(4), zero: true, single: true, x: PX, ytitle: 'Welfare (EUR 1,000)' });
@@ -1039,7 +1139,7 @@ function lineChart(host, P, series, o) {
 }
 let rz = null, lastW = 0; new ResizeObserver(es => { const w = Math.round(es[0].contentRect.width); if (w === lastW) return; lastW = w; clearTimeout(rz); rz = setTimeout(() => { if (mainMsg) { drawCharts(mainMsg); if (!$('calsec').hidden) drawCal(mainMsg); } }, 150); }).observe(document.querySelector('main'));
 
-reset(); send();
+reset(); applyURL(); send();
 })();
 </script>
 </body>
