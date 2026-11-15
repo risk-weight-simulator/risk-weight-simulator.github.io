@@ -1414,7 +1414,7 @@ function schedule() { clearTimeout(timer); reqId++; document.body.classList.add(
 function send() {
   const o = engineInputs(), err = check(o);
   $('inerr').hidden = !err; $('inerr').textContent = err || '';
-  $('adv').hidden = state.method !== 'lr'; if ($('adv').hidden) $('adv').open = false; stackTabbar();
+  const noSteps = state.method !== 'lr'; $('adv').style.visibility = noSteps ? 'hidden' : ''; if (noSteps) $('adv').open = false; stackTabbar();   // keeps its space, so the calculation buttons stay in place
   const mod = baseKey !== JSON.stringify(o) || state.N !== 10; $('modchip').textContent = mod ? 'Modified' : 'German baseline'; $('modchip').className = 'chip' + (mod ? ' mod' : '');
   if (err) { $('status').textContent = 'Results shown are for the last valid inputs.'; return; }
   try { if (location.search) history.replaceState(null, '', mod ? stateURL() : location.pathname); } catch (e) {}   // a shared link follows later changes
