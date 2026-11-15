@@ -593,7 +593,10 @@ figure { margin: 0; min-width: 0 }
 .chart .xh { stroke: var(--ink-3); stroke-width: 0.75 }
 .cmpwith { display: inline-flex; align-items: center; gap: 6px }   /* the comparison choice is the third legend entry of Figure 1 */
 .cmpkey:empty { display: none }
-.legend .cmpwith { flex-basis: 100% }   /* always its own legend line, so the layout is the same for every pair of reforms */
+.legend.inplot { position: absolute; z-index: 1; margin: 0; flex-direction: column; flex-wrap: nowrap; align-items: flex-start; gap: 3px; font-size: 15px; padding: 6px 9px; background: color-mix(in srgb, var(--paper) 90%, transparent); border: 1px solid var(--hair) }   /* Figure 1: legend in the upper left of the plot, where risk weights are low */
+.legend.inplot > span { max-width: 100% }
+.legend:not(.inplot) .cmpwith { flex-basis: 100% }   /* above the plot (phones): the menu on its own legend line */
+.legend.inplot .cmpwith select { min-width: 0; max-width: 100%; text-overflow: ellipsis; font-size: 15px }
 .legend .cmpwith select { width: auto; min-height: 30px; font: 16px var(--serif); color: var(--ink-2); background: var(--bg); border: 1px solid var(--rule); border-radius: 2px; padding: 1px 4px; cursor: pointer }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 16px; color: var(--ink-2); margin-bottom: 4px }
 .legend span { display: inline-flex; align-items: center; gap: 6px }
@@ -1527,7 +1530,7 @@ function drawCharts(m) {
   if (cw && cw !== sel) wser.push({ name: NAMES[cw], color: 'var(--s2)', y: I.map(i => m.schedules[cw][i]), dash: '4 3', w: 1.4, nolegend: true });   // optional comparison schedule, thin and dashed; its legend entry is the menu
   $('cmpwith').querySelector('.cmpkey').replaceChildren(...(cw && cw !== sel ? [key(wser[2], 22)] : []));
   lineChart($('ch_w'), P, wser,
-    { scale: 100, suffix: '%', tfmt: v => (100 * v).toFixed(1) + '%', cuts: true, x: PX, ytitle: 'Risk weight ω', anim: from('ch_w'), legendExtra: $('cmpwith') });
+    { scale: 100, suffix: '%', tfmt: v => (100 * v).toFixed(1) + '%', cuts: true, x: PX, ytitle: 'Risk weight ω', anim: from('ch_w'), legendExtra: $('cmpwith'), legendIn: true });
   sizeCmp();
   if (m.R.unstable) { ['ch_k', 'ch_t', 'ch_v'].forEach(id => figMsg(id, 'Figure omitted: the reform is invalid at these inputs.')); return; }
   const kser = [{ name: m.req.method === 'fo' ? NAMES[sel] + ', approximation' : NAMES[sel] + ', full simulation', color: 'var(--accent)', y: I.map(i => 100 * m.R.k_hat[i] / m.k[i]) }];
@@ -1588,7 +1591,8 @@ function lineChart(host, P, series, o) {
   cancelAnimationFrame(host._raf); if (tipHost === host) { tipOff = null; tipHost = null; }
   const keep = host.offsetHeight; if (keep) host.style.minHeight = keep + 'px';   // hold the height while redrawing, so the page does not shrink and jump
   host.textContent = '';
-  { const lg = document.createElement('div'); lg.className = 'legend'; series.forEach(s => { if (s.nolegend) return; const sp = document.createElement('span'); sp.append(key(s, 22), document.createTextNode(s.name)); lg.append(sp); }); if (o.legendExtra) lg.append(o.legendExtra); host.append(lg); }
+  const inPlot = o.legendIn && host.clientWidth >= 440;   // legend inside the plot only where the plot is wide enough; on phones it stays above
+  const lg = document.createElement('div'); lg.className = 'legend' + (inPlot ? ' inplot' : ''); series.forEach(s => { if (s.nolegend) return; const sp = document.createElement('span'); sp.append(key(s, 22), document.createTextNode(s.name)); lg.append(sp); }); if (o.legendExtra) lg.append(o.legendExtra); host.append(lg);
   const mg = { l: 72, r: 14, t: 8, b: 48 }, W = Math.max(host.clientWidth, 280), H = W - mg.l - mg.r + mg.t + mg.b, iw = W - mg.l - mg.r, ih = H - mg.t - mg.b;
   const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': (o.ytitle || '') + ': ' + series.map(s => s.name).join(', ') }, host);
   const lx0 = Math.log(P[0]), lx1 = Math.log(P[P.length - 1]), X = p => mg.l + (Math.log(p) - lx0) / (lx1 - lx0) * iw;
@@ -1620,6 +1624,7 @@ function lineChart(host, P, series, o) {
     frame(t0);
   }
   mk('rect', { class: 'frame', x: x0, y: y0, width: iw, height: ih }, svg);
+  if (inPlot) { lg.style.left = (x0 + 8) + 'px'; lg.style.top = (y0 + 8) + 'px'; lg.style.maxWidth = (iw - 16) + 'px'; }
   const xh = mk('line', { class: 'xh', y1: y0, y2: y1, visibility: 'hidden' }, svg);
   const tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; host.append(tip);
   const hit = mk('rect', { x: x0, y: y0, width: iw, height: ih, fill: 'transparent' }, svg);
@@ -1631,7 +1636,7 @@ function lineChart(host, P, series, o) {
       const b = document.createElement('b'); b.textContent = Number.isFinite(s.y[j]) ? o.tfmt(s.y[j]) : 'n/a'; const nm = document.createElement('span'); nm.textContent = s.name; row.append(key(s, 14), b, nm); tip.append(row); });
     tip.hidden = false; const hx = px * r.width / W, tw = tip.offsetWidth;
     const left = touch && hx > r.width / 2 ? hx - 12 - tw : hx + 12;   // on touch, the side away from the finger
-    tip.style.left = Math.max(0, Math.min(left, r.width - tw - 4)) + 'px'; tip.style.top = (svg.offsetTop + 8) + 'px'; };
+    tip.style.left = Math.max(0, Math.min(left, r.width - tw - 4)) + 'px'; tip.style.top = (inPlot ? Math.max(y0 + 8, y1 - tip.offsetHeight - 8) : svg.offsetTop + 8) + 'px'; };   // with the legend inside the plot, values at the bottom
   const hide = () => { tip.hidden = true; xh.setAttribute('visibility', 'hidden'); };
   // Mouse and pen: hover. Touch: a tap shows the values and they stay until a tap elsewhere or a scroll; a horizontal drag moves them;
   // a vertical swipe scrolls the page (touch-action: pan-y on the chart), and the browser then cancels the pointer.
