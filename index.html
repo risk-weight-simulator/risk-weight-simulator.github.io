@@ -601,6 +601,8 @@ figure { margin: 0; min-width: 0 }
 .tip b { font-weight: 500; font-variant-numeric: tabular-nums }
 .tip svg { width: 14px; height: 6px; overflow: visible }
 .busy .res { opacity: .55; transition: opacity .15s }
+.bk tr.pend td { color: var(--ink-3) }
+.nwf { white-space: nowrap }
 #calsec { border: 1px solid var(--rule); background: var(--paper); padding: 14px 16px }
 .chead { display: flex; justify-content: space-between; align-items: start; gap: 12px }
 details.notes { border-top: 1px solid var(--rule); padding-top: 10px }
@@ -662,6 +664,15 @@ button.q:hover, button.q[aria-expanded=true] { background: var(--accent); border
 @media (max-width: 1023px) { #calsec { scroll-margin-top: 60px } }
 @media (max-width: 419px) { .headline .v { font-size: 34px } }
 @media (max-width: 767px) { #calsec { border-left: 0; border-right: 0; padding-left: 0; padding-right: 0 } }   /* calibration figures as wide as the result figures */
+.cmpshow { display: none; align-items: center; gap: 10px; margin: 0 0 10px; font: 16px var(--sans); color: var(--ink-2) }
+.cmpshow select { width: auto; flex: 1 1 auto }
+@media (max-width: 767px) {   /* phones: Compare shows the reform and one chosen column */
+  .cmpshow { display: flex }
+  table.bk[data-col] th:not(:first-child), table.bk[data-col] td:not(:first-child):not(.unstable) { display: none }
+  table.bk[data-col="2"] tr > :nth-child(2), table.bk[data-col="3"] tr > :nth-child(3), table.bk[data-col="4"] tr > :nth-child(4),
+  table.bk[data-col="5"] tr > :nth-child(5), table.bk[data-col="6"] tr > :nth-child(6), table.bk[data-col="7"] tr > :nth-child(7) { display: table-cell !important }
+  .bk th, .bk td { white-space: normal; padding: 9px 8px } .bk td:not(:first-child), .bk th:not(:first-child) { white-space: nowrap; width: 1% }
+}
 </style>
 <style>
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px) }
@@ -811,7 +822,10 @@ img { max-width: 100% }
   <div role="tabpanel" id="panel_cmp" aria-labelledby="tab_cmp" hidden>
   <section class="res tabsec">
     <p class="caption" id="cmpcap" style="margin:0 0 12px"><b>Table 1.</b> Aggregate effects of all reforms under the same assumptions and calculation. Select a row to show that reform.</p>
-    <div class="tablewrap"><table class="bk" id="cmp" aria-describedby="cmpcap">
+    <div class="cmpshow"><label for="cmpcol">Show</label><select id="cmpcol">
+      <option value="2">Equity (%)</option><option value="3">Credit (%)</option><option value="4">Bailout probability (pp)</option>
+      <option value="5">Entrepreneurs</option><option value="6">Households</option><option value="7" selected>Welfare</option></select></div>
+    <div class="tablewrap"><table class="bk" id="cmp" aria-describedby="cmpcap" data-col="7">
       <thead><tr><th>Reform</th><th>Equity (%)</th><th>Credit (%)</th><th title="Change in the bailout probability, percentage points">Bailout prob. (pp)</th><th>Entrepreneurs</th><th>Households</th><th>Welfare</th></tr></thead><tbody></tbody></table></div>
     <p class="caption">Equity changes as a percentage of required bank equity; credit changes as a percentage of total credit. Bailout probability: change in percentage points from <i>F</i>(<i>z</i>*) = <span class="fz">5</span>%, the local approximation <i>f</i>(<i>z</i>*)·Δ<i>z</i>*. Welfare in EUR 1,000 per loan. Banks earn zero profits under competition. Aggregate welfare weights banks, entrepreneurs and households equally.</p>
   </section>
@@ -1162,7 +1176,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = api; else 
 (function () {
 'use strict';
 const NAMES = { fed: 'Fed proposal', sa: 'Current standardized approach', u65: 'Uniform 65%', u100: 'Uniform 100%', flat: 'Best flat (82%)', ig2: 'Best two ratings (62% / 117%)', lin: 'Best linear', iso: 'Best isoelastic', fb: 'Optimal schedule' };
-const LABEL = { lin: 'Best linear, <i>ω</i> = 0.69 + 9.58 <i>p</i>', iso: 'Best isoelastic, <i>ω</i> = 1.92 <i>p</i><sup>0.15</sup>' };   // fixed markup, set as HTML
+const LABEL = { lin: 'Best linear, <span class="nwf"><i>ω</i> = 0.69 + 9.58 <i>p</i></span>', iso: 'Best isoelastic, <span class="nwf"><i>ω</i> = 1.92 <i>p</i><sup>0.15</sup></span>', ig2: 'Best two ratings <span class="nwf">(62% / 117%)</span>' };   // fixed markup, set as HTML
 const label = r => LABEL[r] || NAMES[r];
 const ORDER = ['fed', 'sa', 'u65', 'u100', 'flat', 'ig2', 'lin', 'iso', 'fb'];
 const GROUPS = ['AAA to AA−', 'A+ to A−', 'BBB+ to BB−', 'Below BB−'];
@@ -1427,8 +1441,8 @@ function send() {
 }
 worker.onmessage = e => {
   const m = e.data; if (m.id !== reqId) return;
-  if (m.type === 'main') { mainMsg = m; shown = m.req; renderMain(m);  }
-  else { rows = m.rows; renderTable(); if (m.done) { document.body.classList.remove('busy');  } }
+  if (m.type === 'main') { mainMsg = m; shown = m.req; renderMain(m); document.body.classList.remove('busy'); }   // the selected reform is ready; the Compare rows fill in as they finish
+  else { rows = m.rows; renderTable(); }
 };
 
 // ---------- rendering ----------
@@ -1474,7 +1488,7 @@ function renderTable() {
   const tb = document.querySelector('#cmp tbody'); tb.textContent = '';
   const done = ORDER.filter(r => rows[r]), ok = done.filter(r => !rows[r].unstable);
   ORDER.forEach(r => {
-    const tr = document.createElement('tr'); if (r === shown.reform) tr.className = 'sel';
+    const tr = document.createElement('tr'); if (r === shown.reform) tr.className = 'sel'; else if (!rows[r]) tr.className = 'pend';
     tr.tabIndex = 0; tr.addEventListener('click', () => choose(r)); tr.addEventListener('keydown', e => { if (e.key === 'Enter') choose(r); });
     const x = rows[r], cells = x ? [fmt(x.E, 2), fmt(x.L, 2), fmt(100 * F_DENS * x.z, 3), fmt(x.V_E, 4), fmt(x.V_H, 4), fmt(x.W, 4)] : ['…', '…', '…', '…', '…', '…'];
     const td0 = document.createElement('td'); td0.innerHTML = label(r);
@@ -1488,6 +1502,7 @@ function renderTable() {
 function tableFade() { const t = document.querySelector('.tablewrap'); t.classList.toggle('more', t.scrollLeft + t.clientWidth < t.scrollWidth - 2); }   // fade the right edge while columns remain off screen
 document.querySelector('.tablewrap').addEventListener('scroll', tableFade, { passive: true }); addEventListener('resize', tableFade);
 function choose(r) { state.reform = r; $('reform').value = r; schedule(); }
+$('cmpcol').addEventListener('change', e => { $('cmp').dataset.col = e.target.value; tableFade(); });
 function figMsg(id, text) { const h = $(id); cancelAnimationFrame(h._raf); h._key = h._cur = null; h.textContent = ''; const d = document.createElement('div'); d.className = 'figmsg'; d.textContent = text; h.append(d); }
 
 const CUTS = [0.0002, 0.0014, 0.0298];
