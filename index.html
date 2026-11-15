@@ -575,8 +575,7 @@ body.side-open .best { display: block; margin-left: 0 }
 .best { font: italic 12.5px var(--serif); color: var(--ink-3); margin-left: 8px; font-weight: 400 }
 .caption { font-size: 17px; color: var(--ink-2); margin: 12px 0 0; text-wrap: pretty }
 .caption b { color: var(--ink); font-weight: 600 }
-.figs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px 32px }
-@media (max-width: 1100px) { .figs { grid-template-columns: minmax(0, 1fr) } }
+.figs { display: grid; grid-template-columns: repeat(auto-fit, min(100%, 480px)); justify-content: center; gap: 20px 32px }   /* every figure 480 px wide, or the full width on phones */
 figure { margin: 0; min-width: 0 }
 .chart { position: relative }
 .chart svg { display: block; width: 100%; height: auto; overflow: visible }
@@ -613,8 +612,6 @@ details.notes summary { cursor: pointer; font-size: 20px }
 .foot { border-top: 1px solid var(--rule); padding-top: 12px; color: var(--ink-3); font: 14px var(--sans); display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px 16px }
 .foot span { white-space: nowrap }
 .notes p { margin: 8px 0 }
-.figs.one { grid-template-columns: minmax(0, 1fr); justify-items: center }
-.figs.one figure { width: 100%; max-width: 640px }
 .tabsec { padding-top: 6px }
 @media (max-width: 640px) { .tabs { gap: 4px 16px !important } }
 .tabs { display: flex; flex-wrap: wrap; gap: 6px 24px; border-bottom: 1px solid var(--rule); margin-bottom: -6px }
@@ -661,6 +658,7 @@ button.q:hover, button.q[aria-expanded=true] { background: var(--accent); border
 @media (max-width: 359px) { header h1 { font-size: 23px } #calsec h2 { font-size: 21px } }
 @media (max-width: 1023px) { #calsec { scroll-margin-top: 60px } }
 @media (max-width: 419px) { .headline .v { font-size: 34px } }
+@media (max-width: 767px) { #calsec { border-left: 0; border-right: 0; padding-left: 0; padding-right: 0 } }   /* calibration figures as wide as the result figures */
 </style>
 <style>
 :root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px) }
@@ -674,7 +672,7 @@ img { max-width: 100% }
 <div class="strip" id="strip" aria-hidden="true"><span class="logo"></span><span>Risk Weight Simulator</span></div>
 <header>
   <h1><span class="logo"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6.4" fill="#234D79"/><path d="M7 6.5V25H25.5" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.6 23.4C9.3 15 13.5 10.4 25 8.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>Risk Weight Simulator</h1>
-  <p>Explore how alternative risk weights for corporate loans affect bank lending and welfare, including the proposed U.S. 65%/100% schedule (investment‑grade/other loans).</p>
+  <p>How should Basel III risk weights be designed? Explore how different regulatory policies affect bank lending, financial stability, and welfare.</p>
   <p class="attr">Calibrated to German corporate lending · Competitive banking · Relative to current Basel III IRBA risk weights</p>
   <p class="cite">Jager &amp; Schulz (2026) · <a href="https://drive.google.com/file/d/1gWIlKs8f74dNEKbL3XkxwxFksfOj9e98/view" target="_blank" rel="noopener">Read the paper</a> · <a href="#cite">How to cite</a> · <button type="button" class="linkbtn" id="copylink">Copy link</button></p>
 </header>
@@ -1523,7 +1521,7 @@ function barChart(host, cats, series) {
   const lg = document.createElement('div'); lg.className = 'legend';
   series.forEach(s => { const sp = document.createElement('span'); const sw = document.createElement('i'); sw.style.cssText = 'display:inline-block;width:12px;height:12px;background:' + s.color; sp.append(sw, document.createTextNode(s.name)); lg.append(sp); });
   host.append(lg);
-  const mg = { l: 72, r: 14, t: 8, b: 48 }, W = Math.max(host.clientWidth, 280), H = W - mg.l - mg.r + mg.t + mg.b, iw = W - mg.l - mg.r, ih = H - mg.t - mg.b - 8;
+  const mg = { l: 72, r: 14, t: 8, b: 48 }, W = Math.max(host.clientWidth, 280), H = W - mg.l - mg.r + mg.t + mg.b, iw = W - mg.l - mg.r, ih = H - mg.t - mg.b;
   const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Share of loans and of credit by rating group' }, host);
   const hi = Math.max(...series.flatMap(s => s.y)) * 1.12, t = niceTicks(0, hi, 5), Y = v => mg.t + (hi - v) / hi * ih, x0 = mg.l, y1 = mg.t + ih;
   const g = mk('g', { class: 'grid' }, svg);
