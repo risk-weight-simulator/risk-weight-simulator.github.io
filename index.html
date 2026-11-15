@@ -593,6 +593,7 @@ figure { margin: 0; min-width: 0 }
 .chart .xh { stroke: var(--ink-3); stroke-width: 0.75 }
 .cmpwith { display: inline-flex; align-items: center; gap: 6px }   /* the comparison choice is the third legend entry of Figure 1 */
 .cmpkey:empty { display: none }
+.legend .cmpwith { flex-basis: 100% }   /* always its own legend line, so the layout is the same for every pair of reforms */
 .legend .cmpwith select { width: auto; min-height: 30px; font: 16px var(--serif); color: var(--ink-2); background: var(--bg); border: 1px solid var(--rule); border-radius: 2px; padding: 1px 4px; cursor: pointer }
 .legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 16px; color: var(--ink-2); margin-bottom: 4px }
 .legend span { display: inline-flex; align-items: center; gap: 6px }
