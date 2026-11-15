@@ -36,6 +36,9 @@ header { border-bottom: 1.5px solid var(--ink); padding-bottom: 12px }
 header h1 { display: flex; align-items: center; gap: 12px; font-size: 34px; font-weight: 500; margin: 0; text-wrap: balance; letter-spacing: -0.005em }
 header p { margin: 6px 0 0; color: var(--ink-2); font-size: 18px }
 header p + p:not(.cite) { margin-top: 4px }
+.cite a, .cite .linkbtn { white-space: nowrap }
+header p.attr { font-size: 16px; color: var(--ink-3); margin-top: 6px }
+@media (max-width: 479px) { .clab { display: none } }
 .layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 28px; align-items: start }
 aside { display: none !important }
 body.side-open .layout { grid-template-columns: 280px minmax(0, 1fr) }
@@ -63,8 +66,8 @@ body.side-open aside { display: grid !important }
     padding: 14px max(16px, env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)) !important }
   .sheetfoot { display: flex; position: sticky; bottom: calc(-14px - env(safe-area-inset-bottom, 0px)); background: var(--paper); padding: 10px 0; margin-bottom: -4px; border-top: 1px solid var(--rule) }
   .sheetfoot button { flex: 1 }
-  .c-ref { order: 1; width: 100% } .c-ref select { width: 100% }
-  .c-calc { order: 2 } #nctl { order: 3 } .c-ass { order: 4; width: 100% }
+  .c-ref { width: 100% } .c-ref select { width: 100% }
+  .c-ass { width: 100%; margin-left: 0 !important }
   .tabs { flex-wrap: nowrap !important; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; gap: 4px 20px !important }
   .tabs::-webkit-scrollbar { display: none }
   .tabs button { white-space: nowrap; flex: none }
@@ -120,7 +123,23 @@ main > * { min-width: 0 }
 .nrow input { width: 64px }
 .status:empty { display: none }
 .bk td.unstable { font: italic 13.5px var(--serif); color: var(--warn-ink); text-align: left; white-space: normal }
-#nctl > label { justify-content: flex-start; gap: 4px }
+.c-ref select { font-size: 18px; min-width: min(100%, 330px); padding: 6px 8px }
+.c-ass { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap }
+.tabbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 24px; border-bottom: 1px solid var(--rule); margin-bottom: -6px }
+.tabbar .tabs { flex: 1 1 auto; min-width: 0; border-bottom: 0; margin-bottom: 0 }
+.tabbar.stack { border-bottom: 0 }
+.tabbar.stack .tabs { flex-basis: 100%; border-bottom: 1px solid var(--rule) }
+.calcbox { margin-left: auto; display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 6px 8px; padding-bottom: 6px; font-family: var(--sans) }
+.tabbar.stack .calcbox { padding: 4px 0 0 }
+.clab { font-size: 15px; color: var(--ink-2) }
+.calcbox .seg button { font-size: 15px; padding: 4px 11px }
+.adv { position: relative; font-size: 15px; color: var(--ink-2) }
+.adv summary { cursor: pointer; list-style: none; padding: 4px 2px; white-space: nowrap; font-variant-numeric: tabular-nums }
+.adv summary::-webkit-details-marker { display: none }
+.adv summary::after { content: ""; display: inline-block; width: 6px; height: 6px; margin-left: 7px; border: solid currentColor; border-width: 0 1.5px 1.5px 0; transform: translateY(-3px) rotate(45deg) }
+.adv[open] summary::after { transform: translateY(0) rotate(-135deg) }
+.advpanel { position: absolute; right: 0; top: calc(100% + 6px); z-index: 25; width: max-content; display: grid; gap: 6px; background: var(--paper); border: 1px solid var(--rule); box-shadow: 0 4px 16px rgba(0,0,0,.16); padding: 10px 12px }
+.advpanel label { font-size: 15px; color: var(--ink-2) }
 .figmsg { height: 270px; display: grid; place-items: center; border: 1px solid var(--rule); color: var(--ink-3); font-style: italic; font-size: 14px; text-align: center; padding: 16px }
 .status { font: 12px var(--sans); color: var(--ink-3); font-variant-numeric: tabular-nums }
 section h2 { font-size: 25px; font-weight: 500; margin: 0 0 4px; color: var(--accent) }
@@ -156,6 +175,7 @@ body.side-open .best { display: block; margin-left: 0 }
 figure { margin: 0; min-width: 0 }
 .chart { position: relative }
 .chart svg { display: block; width: 100%; height: auto; overflow: visible }
+.chart > svg { touch-action: pan-y; touch-action: pan-y pinch-zoom; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent }
 .chart text { fill: var(--ink-2); font: 15px var(--serif) }
 .chart text.ttl { fill: var(--ink); font-size: 16px }
 .chart .grid line { stroke: var(--hair); stroke-width: 1 }
@@ -212,7 +232,6 @@ button.q:hover, button.q[aria-expanded=true] { background: var(--accent); border
 .ctl > label.hasq .nw { white-space: nowrap }
 .ctl > label.hasq .sym { margin-left: 2px }
 .ctl > label.hasq button.q { margin-top: 2px }
-.c-calc > label { justify-content: flex-start; align-items: center; gap: 6px }
 .linkbtn { font: inherit; color: var(--accent); background: none; border: 0; padding: 0; min-height: 0; text-decoration: underline; cursor: pointer }
 .segrow { display: flex; align-items: center; gap: 8px }
 .headline .k button.q { margin-left: 1px }
@@ -249,9 +268,9 @@ img { max-width: 100% }
 <div class="strip" id="strip" aria-hidden="true"><span class="logo"></span><span>Risk Weight Simulator</span></div>
 <header>
   <h1><span class="logo"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6.4" fill="#234D79"/><path d="M7 6.5V25H25.5" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.6 23.4C9.3 15 13.5 10.4 25 8.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>Risk Weight Simulator</h1>
-  <p>Effects of replacing the Basel III internal ratings‑based (IRBA) risk weights on corporate loans with an alternative schedule, such as the Basel III Endgame proposal (65% for investment‑grade loans, 100% otherwise).</p>
-  <p>Calibrated to German corporate lending in Maximilian Jager and Karl Schulz, <i>Nonlinear Bank Capital Regulation</i> (2026). Competitive banking; all effects are measured relative to the current IRBA schedule.</p>
-  <p class="cite"><a href="https://drive.google.com/file/d/1gWIlKs8f74dNEKbL3XkxwxFksfOj9e98/view" target="_blank" rel="noopener">Read the paper</a> · <a href="#cite">How to cite</a> · <button type="button" class="linkbtn" id="copylink">Copy link</button></p>
+  <p>Explore how alternative risk weights for corporate loans affect bank lending and welfare, including the proposed U.S. 65%/100% schedule (investment‑grade/other loans).</p>
+  <p class="attr">Calibrated to German corporate lending · Competitive banking · Relative to current Basel III IRBA risk weights</p>
+  <p class="cite">Jager &amp; Schulz (2026) · <a href="https://drive.google.com/file/d/1gWIlKs8f74dNEKbL3XkxwxFksfOj9e98/view" target="_blank" rel="noopener">Read the paper</a> · <a href="#cite">How to cite</a> · <button type="button" class="linkbtn" id="copylink">Copy link</button></p>
 </header>
 
 <div class="layout">
@@ -303,7 +322,7 @@ img { max-width: 100% }
         </div>
       </div>
       <div class="grp"><h3>Risk response</h3>
-        <div class="ctl" data-key="eps_p_k" data-min="-1" data-max="2.5" data-step="0.01"><label>Credit‑risk sensitivity to leverage <span class="sym">ε<sup>p,k</sup></span></label></div>
+        <div class="ctl" data-key="eps_p_k" data-min="-1" data-max="2.5" data-step="0.01"><label>Default risk sensitivity to credit <span class="sym">ε<sup>p,k</sup></span></label></div>
       </div>
     </div>
   </details>
@@ -326,8 +345,6 @@ img { max-width: 100% }
 
 <main>
   <div class="ctrlbar">
-    <div class="ctl c-ass" style="min-width:0"><label>Assumptions</label>
-      <div class="nrow"><button type="button" id="toggleside" aria-expanded="false" aria-controls="controls">Change assumptions</button><span class="chip" id="modchip">German baseline</span></div></div>
     <div class="ctl c-ref"><label for="reform">Reform</label>
       <select id="reform">
         <option value="fed">Fed proposal (65% / 100%)</option>
@@ -340,13 +357,7 @@ img { max-width: 100% }
         <option value="iso">Best isoelastic</option>
         <option value="fb">Optimal schedule</option>
       </select></div>
-    <div class="ctl c-calc" style="min-width:0"><label>Calculation <button type="button" class="q" data-help="calc" aria-label="Explain: calculation" aria-expanded="false">?</button></label>
-      <div class="seg" role="group" aria-label="Calculation">
-        <button type="button" data-m="fo" aria-pressed="false">Approximation</button>
-        <button type="button" data-m="lr" aria-pressed="true">Full simulation</button>
-      </div></div>
-    <div class="ctl" id="nctl" style="min-width:0"><label for="nsteps">Steps <i>N</i></label>
-      <div class="nrow"><input type="number" id="nsteps" min="2" max="400" step="2" value="10"><span class="hint">exact: <i>N</i> → ∞</span></div></div>
+    <div class="c-ass"><button type="button" id="toggleside" aria-expanded="false" aria-controls="controls">Change assumptions</button><span class="chip" id="modchip">German baseline</span></div>
     <div class="status" id="status"></div>
   </div>
 
@@ -368,11 +379,23 @@ img { max-width: 100% }
   </section>
 
 
+  <div class="tabbar" id="tabbar">
   <div class="tabs" role="tablist" aria-label="Results">
     <button type="button" role="tab" id="tab_rw" aria-controls="panel_rw" aria-selected="true">Risk weights</button>
     <button type="button" role="tab" id="tab_credit" aria-controls="panel_credit" aria-selected="false" tabindex="-1">Credit<span class="tx"> effects</span></button>
     <button type="button" role="tab" id="tab_welfare" aria-controls="panel_welfare" aria-selected="false" tabindex="-1">Welfare<span class="tx"> effects</span></button>
     <button type="button" role="tab" id="tab_cmp" aria-controls="panel_cmp" aria-selected="false" tabindex="-1">Compare<span class="tx"> reforms</span></button>
+  </div>
+  <div class="calcbox" id="calcbox">
+    <span class="clab">Calculation</span><button type="button" class="q" data-help="calc" aria-label="Explain: calculation" aria-expanded="false">?</button>
+    <div class="seg" role="group" aria-label="Calculation">
+      <button type="button" data-m="fo" aria-pressed="false">Approximation</button>
+      <button type="button" data-m="lr" aria-pressed="true">Full simulation</button>
+    </div>
+    <details class="adv" id="adv"><summary>Steps <i>N</i> = <span id="nshow">10</span></summary>
+      <div class="advpanel"><label for="nsteps">Steps <i>N</i> in the full simulation</label>
+        <div class="nrow"><input type="number" id="nsteps" min="2" max="400" step="2" value="10"><span class="hint">exact: <i>N</i> → ∞</span></div></div></details>
+  </div>
   </div>
   <div class="figs one" role="tabpanel" id="panel_rw" aria-labelledby="tab_rw">
     <figure class="res"><div class="chart" id="ch_w"></div><figcaption class="caption"><b>Figure 1.</b> Risk weight <i>ω</i>(<i>p</i>) by probability of default. Dotted lines mark the rating‑group cutoffs.</figcaption></figure>
@@ -904,7 +927,7 @@ function applyURL() {
   const q = new URLSearchParams(location.search); if (!q.has('reform')) return;
   if (NAMES[q.get('reform')]) { state.reform = q.get('reform'); $('reform').value = state.reform; }
   if (q.get('calc') === 'approx') { state.method = 'fo'; document.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.m === 'fo'))); }
-  const N = +q.get('N'); if (q.has('N') && Number.isInteger(N) && N % 2 === 0 && N >= 2 && N <= 400) { state.N = N; $('nsteps').value = N; }
+  const N = +q.get('N'); if (q.has('N') && Number.isInteger(N) && N % 2 === 0 && N >= 2 && N <= 400) setN(N);
   if (q.get('groups') === '1') { state.het = true; syncHet(); }
   Object.keys(ctls).forEach(k => { if (!q.has(k)) return; const v = +q.get(k); if (!Number.isFinite(v)) return; state.inp[k] = v; ctls[k].set(v); if (k === 'eps_p_k') state.epsAuto = false; });
 }
@@ -919,7 +942,7 @@ function syncHet() { $('uni').hidden = state.het; $('het').hidden = !state.het;
 function reset() {
   Object.entries(DEF).forEach(([k, v]) => { state.inp[k] = v; if (v !== null && ctls[k]) ctls[k].set(v); });
   state.epsAuto = true; state.het = false; syncHet();
-  state.N = 10; $('nsteps').value = 10;
+  setN(10);
   baseKey = JSON.stringify(engineInputs());
 }
 document.querySelectorAll('[data-h]').forEach(b => b.addEventListener('click', () => { state.het = b.dataset.h === '1'; syncHet(); schedule(); }));
@@ -927,7 +950,10 @@ $('reset').addEventListener('click', () => { reset(); try { if (location.search)
 $('reform').addEventListener('change', e => { state.reform = e.target.value; schedule(); });
 document.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => {
   state.method = b.dataset.m; document.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); schedule(); }));
-$('nsteps').addEventListener('change', e => { state.N = +e.target.value; schedule(); });
+function setN(N) { state.N = N; $('nsteps').value = N; $('nshow').textContent = N; }
+$('nsteps').addEventListener('change', e => { state.N = +e.target.value; $('nshow').textContent = e.target.value; schedule(); });
+document.addEventListener('click', e => { if ($('adv').open && !e.target.closest('#adv')) $('adv').open = false; });
+function stackTabbar() { const bar = $('tabbar'); bar.classList.remove('stack'); bar.classList.toggle('stack', $('calcbox').offsetTop > bar.querySelector('.tabs').offsetTop + 4); }   // calculation row below the tabs when both do not fit on one line
 $('showcal').addEventListener('click', () => { $('calsec').hidden = false; if (mainMsg) drawCal(mainMsg); $('calsec').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 $('hidecal').addEventListener('click', () => { $('calsec').hidden = true; });
 function setSide(open) { document.body.classList.toggle('side-open', open); $('toggleside').setAttribute('aria-expanded', String(open)); requestAnimationFrame(tableFade); $('toggleside').textContent = open ? 'Hide assumptions' : 'Change assumptions'; if (open && innerWidth >= 768) $('controls').scrollIntoView({ block: 'nearest' });
@@ -941,7 +967,7 @@ const TABS = [['tab_rw', 'panel_rw'], ['tab_credit', 'panel_credit'], ['tab_welf
 function showTab(id) { TABS.forEach(([b, p]) => { const on = b === id; $(b).setAttribute('aria-selected', String(on)); $(b).tabIndex = on ? 0 : -1; $(p).hidden = !on; }); if (mainMsg) drawCharts(mainMsg); tableFade(); }
 TABS.forEach(([b], i) => { $(b).addEventListener('click', () => showTab(b));
   $(b).addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const j = (i + (e.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length; showTab(TABS[j][0]); $(TABS[j][0]).focus(); } }); });
-document.querySelectorAll('a[href="#cite"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); $('cite').open = true; requestAnimationFrame(() => $('cite').scrollIntoView({ block: 'start' })); }));   // the viewer frame does not scroll to #fragments itself
+document.querySelectorAll('a[href="#cite"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); $('cite').open = true; requestAnimationFrame(() => $('cite').scrollIntoView({ block: 'start' })); }));   // open the closed Citation section, then scroll to it
 document.querySelectorAll('.copymail').forEach(b => b.addEventListener('click', () => {
   const txt = b.dataset.mail, done = ok => { b.textContent = ok ? 'Copied' : 'Select to copy'; setTimeout(() => { b.textContent = 'Copy'; }, 1800); };
   const sel = () => { const r = document.createRange(); r.selectNodeContents(b.previousElementSibling); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
@@ -983,7 +1009,7 @@ function schedule() { clearTimeout(timer); reqId++; document.body.classList.add(
 function send() {
   const o = engineInputs(), err = check(o);
   $('inerr').hidden = !err; $('inerr').textContent = err || '';
-  $('nctl').hidden = state.method !== 'lr';
+  $('adv').hidden = state.method !== 'lr'; if ($('adv').hidden) $('adv').open = false; stackTabbar();
   const mod = baseKey !== JSON.stringify(o) || state.N !== 10; $('modchip').textContent = mod ? 'Modified' : 'German baseline'; $('modchip').className = 'chip' + (mod ? ' mod' : '');
   if (err) { $('status').textContent = 'Results shown are for the last valid inputs.'; return; }
   try { if (location.search) history.replaceState(null, '', mod ? stateURL() : location.pathname); } catch (e) {}   // a shared link follows later changes
@@ -1057,10 +1083,12 @@ const CUTS = [0.0002, 0.0014, 0.0298];
 const PX = { ticks: [1e-4, 1e-3, 1e-2, 1e-1], lab: p => (100 * p) + '%', title: 'Probability of default, p (log scale)', tipx: p => 'p = ' + (100 * p).toPrecision(3) + '%' };
 function idx(arr, lim) { const o = []; for (let i = 1; i < arr.length && arr[i] <= lim; i += 6) o.push(i); let j = o[o.length - 1]; while (j + 1 < arr.length && arr[j + 1] <= lim) j++; if (j !== o[o.length - 1]) o.push(j); return o; }
 function drawCharts(m) {
-  const I = idx(m.p, P_SHOW), P = I.map(i => m.p[i]), sel = m.req.reform;
+  const I = idx(m.p, P_SHOW), P = I.map(i => m.p[i]), sel = m.req.reform, ySel = I.map(i => m.schedules[sel][i]);
+  const anim = prevRW && prevRW.reform !== sel && prevRW.y.length === P.length && prevRW.p0 === P[0] && !$('panel_rw').hidden ? { i: 1, from: prevRW.y } : null;   // a new reform: the curve moves from the old schedule
+  prevRW = { reform: sel, y: ySel, p0: P[0] };
   lineChart($('ch_w'), P, [{ name: 'IRBA (current)', color: 'var(--base)', y: I.map(i => m.schedules.irba[i]), dash: '6 3' },
-                          { name: NAMES[sel], color: 'var(--accent)', y: I.map(i => m.schedules[sel][i]) }],
-    { scale: 100, suffix: '%', tfmt: v => (100 * v).toFixed(1) + '%', cuts: true, x: PX, ytitle: 'Risk weight ω' });
+                          { name: NAMES[sel], color: 'var(--accent)', y: ySel }],
+    { scale: 100, suffix: '%', tfmt: v => (100 * v).toFixed(1) + '%', cuts: true, x: PX, ytitle: 'Risk weight ω', anim });
   if (m.R.unstable) { ['ch_k', 'ch_t', 'ch_v'].forEach(id => figMsg(id, 'Figure omitted: the reform is invalid at these inputs.')); return; }
   const kser = [{ name: m.req.method === 'fo' ? NAMES[sel] + ', approximation' : NAMES[sel] + ', full simulation', color: 'var(--accent)', y: I.map(i => 100 * m.R.k_hat[i] / m.k[i]) }];
   if (m.req.method !== 'fo') kser.unshift({ name: 'Approximation', color: 'var(--base)', dash: '6 3', y: I.map(i => 100 * m.k_hat_fo[i] / m.k[i]) });
@@ -1111,7 +1139,13 @@ const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag)
 const key = (s, w) => { const sv = mk('svg', { viewBox: `0 0 ${w} 6` }); const l = mk('line', { x1: 0, x2: w, y1: 3, y2: 3, 'stroke-width': 2 }, sv); l.style.stroke = s.color; if (s.dash) l.setAttribute('stroke-dasharray', s.dash); return sv; };
 function niceTicks(lo, hi, n) { const span = hi - lo || 1, step0 = span / n, mag = Math.pow(10, Math.floor(Math.log10(step0))), f = step0 / mag;
   const step = (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * mag, t = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-12 * span; v += step) t.push(+v.toPrecision(12)); t.dec = Math.max(0, -Math.floor(Math.log10(step) + 1e-9)); return t; }
+let prevRW = null, tipOff = null, tipHost = null;   // last drawn Figure 1 schedule; the open touch tooltip and its chart
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
+function dropTip() { if (tipOff) tipOff(); tipOff = null; tipHost = null; }
+document.addEventListener('pointerdown', e => { if (tipHost && !tipHost.contains(e.target)) dropTip(); }, true);   // a tap elsewhere closes it
+addEventListener('scroll', () => { if (tipOff) dropTip(); }, { passive: true });   // so does scrolling
 function lineChart(host, P, series, o) {
+  cancelAnimationFrame(host._raf); if (tipHost === host) { tipOff = null; tipHost = null; }
   const keep = host.offsetHeight; if (keep) host.style.minHeight = keep + 'px';   // hold the height while redrawing, so the page does not shrink and jump
   host.textContent = '';
   { const lg = document.createElement('div'); lg.className = 'legend'; series.forEach(s => { const sp = document.createElement('span'); sp.append(key(s, 22), document.createTextNode(s.name)); lg.append(sp); }); host.append(lg); }
@@ -1132,23 +1166,48 @@ function lineChart(host, P, series, o) {
   if (o.ytitle) { const yt = mk('text', { class: 'ttl', x: 0, y: 0, 'text-anchor': 'middle', transform: `translate(13 ${(y0 + y1) / 2}) rotate(-90)` }, svg); yt.textContent = o.ytitle; }
   if (o.cuts) CUTS.forEach(c => { if (c > P[0] && c < P[P.length - 1]) mk('line', { class: 'cut', x1: X(c), x2: X(c), y1: y0, y2: y1 }, svg); });
   if (o.zero && lo < 0 && hi > 0) mk('line', { class: 'zero', x1: x0, x2: x1, y1: Y(0), y2: Y(0) }, svg);
-  series.forEach(s => { let d = '', pen = false; s.y.forEach((v, i) => { if (Number.isFinite(v)) { d += (pen ? 'L' : 'M') + X(P[i]).toFixed(1) + ' ' + Y(v).toFixed(1); pen = true; } else pen = false; });
-    const pa = mk('path', { d, fill: 'none', 'stroke-width': s.color === 'var(--accent)' ? 2.4 : 1.75, 'stroke-linejoin': 'round' }, svg); pa.style.stroke = s.color; if (s.dash) pa.setAttribute('stroke-dasharray', s.dash); });
+  const pathD = y => { let d = '', pen = false; y.forEach((v, i) => { if (Number.isFinite(v)) { d += (pen ? 'L' : 'M') + X(P[i]).toFixed(1) + ' ' + Y(v).toFixed(1); pen = true; } else pen = false; }); return d; };
+  const paths = series.map(s => { const pa = mk('path', { d: pathD(s.y), fill: 'none', 'stroke-width': s.color === 'var(--accent)' ? 2.4 : 1.75, 'stroke-linejoin': 'round' }, svg); pa.style.stroke = s.color; if (s.dash) pa.setAttribute('stroke-dasharray', s.dash); return pa; });
+  if (o.anim && !reduceMotion.matches) {   // move the changed curve from the old to the new values on the new axes, about 320 ms
+    const cid = 'clip_' + host.id, cp = mk('clipPath', { id: cid }, svg); mk('rect', { x: x0, y: y0, width: iw, height: ih }, cp);
+    const pa = paths[o.anim.i], a = o.anim.from, b = series[o.anim.i].y, t0 = performance.now(), D = 320;
+    pa.setAttribute('clip-path', `url(#${cid})`);
+    const frame = now => { const u = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - u, 3);
+      pa.setAttribute('d', pathD(b.map((v, i) => Number.isFinite(v) && Number.isFinite(a[i]) ? a[i] + (v - a[i]) * e : v)));
+      if (u < 1) host._raf = requestAnimationFrame(frame); else { pa.setAttribute('d', pathD(b)); pa.removeAttribute('clip-path'); } };
+    frame(t0);
+  }
   mk('rect', { class: 'frame', x: x0, y: y0, width: iw, height: ih }, svg);
   const xh = mk('line', { class: 'xh', y1: y0, y2: y1, visibility: 'hidden' }, svg);
   const tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; host.append(tip);
   const hit = mk('rect', { x: x0, y: y0, width: iw, height: ih, fill: 'transparent' }, svg);
-  const move = ev => { const r = svg.getBoundingClientRect(), sx = (ev.clientX - r.left) * W / r.width;
+  const move = (ev, touch) => { const r = svg.getBoundingClientRect(), sx = (ev.clientX - r.left) * W / r.width;
     const lp = lx0 + (sx - mg.l) / iw * (lx1 - lx0); let j = 0, best = Infinity; P.forEach((p, i) => { const dd = Math.abs(Math.log(p) - lp); if (dd < best) { best = dd; j = i; } });
     const px = X(P[j]); xh.setAttribute('x1', px); xh.setAttribute('x2', px); xh.setAttribute('visibility', 'visible');
     tip.textContent = ''; const hd = document.createElement('div'); hd.className = 'p'; hd.textContent = o.x.tipx(P[j]); tip.append(hd);
     series.forEach(s => { const row = document.createElement('div'); row.className = 'r';
       const b = document.createElement('b'); b.textContent = Number.isFinite(s.y[j]) ? o.tfmt(s.y[j]) : 'n/a'; const nm = document.createElement('span'); nm.textContent = s.name; row.append(key(s, 14), b, nm); tip.append(row); });
-    tip.hidden = false; const hx = px * r.width / W; tip.style.left = Math.max(0, Math.min(hx + 12, r.width - tip.offsetWidth - 4)) + 'px'; tip.style.top = (svg.offsetTop + 8) + 'px'; };
-  hit.addEventListener('pointermove', move); hit.addEventListener('pointerleave', () => { tip.hidden = true; xh.setAttribute('visibility', 'hidden'); });
+    tip.hidden = false; const hx = px * r.width / W, tw = tip.offsetWidth;
+    const left = touch && hx > r.width / 2 ? hx - 12 - tw : hx + 12;   // on touch, the side away from the finger
+    tip.style.left = Math.max(0, Math.min(left, r.width - tw - 4)) + 'px'; tip.style.top = (svg.offsetTop + 8) + 'px'; };
+  const hide = () => { tip.hidden = true; xh.setAttribute('visibility', 'hidden'); };
+  // Mouse and pen: hover. Touch: a tap shows the values and they stay until a tap elsewhere or a scroll; a horizontal drag moves them;
+  // a vertical swipe scrolls the page (touch-action: pan-y on the chart), and the browser then cancels the pointer.
+  let tp = null;
+  const hover = ev => ev.pointerType !== 'touch';
+  hit.addEventListener('pointermove', ev => { if (hover(ev)) { move(ev); return; }
+    if (!tp || tp.id !== ev.pointerId) return;
+    const dx = ev.clientX - tp.x, dy = ev.clientY - tp.y;
+    if (tp.scrub || (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy))) { tp.scrub = true; move(ev, true); if (tipHost !== host) { dropTip(); tipOff = hide; tipHost = host; } } });
+  hit.addEventListener('pointerdown', ev => { if (!hover(ev)) tp = { id: ev.pointerId, x: ev.clientX, y: ev.clientY }; });
+  hit.addEventListener('pointerup', ev => { if (hover(ev) || !tp || tp.id !== ev.pointerId) return;
+    if (tp.scrub || Math.hypot(ev.clientX - tp.x, ev.clientY - tp.y) < 10) { if (tipHost !== host) dropTip(); move(ev, true); tipOff = hide; tipHost = host; }
+    tp = null; });
+  hit.addEventListener('pointercancel', () => { tp = null; });
+  hit.addEventListener('pointerleave', ev => { if (hover(ev)) hide(); });
   host.style.minHeight = '';
 }
-let rz = null, lastW = 0; new ResizeObserver(es => { const w = Math.round(es[0].contentRect.width); if (w === lastW) return; lastW = w; clearTimeout(rz); rz = setTimeout(() => { if (mainMsg) { drawCharts(mainMsg); if (!$('calsec').hidden) drawCal(mainMsg); } }, 150); }).observe(document.querySelector('main'));
+let rz = null, lastW = 0; new ResizeObserver(es => { const w = Math.round(es[0].contentRect.width); if (w === lastW) return; lastW = w; stackTabbar(); clearTimeout(rz); rz = setTimeout(() => { if (mainMsg) { drawCharts(mainMsg); if (!$('calsec').hidden) drawCal(mainMsg); } }, 150); }).observe(document.querySelector('main'));
 
 reset(); applyURL(); send();
 })();
