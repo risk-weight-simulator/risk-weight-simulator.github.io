@@ -136,6 +136,8 @@ section h2 { font-size: 25px; font-weight: 500; margin: 0 0 4px; color: var(--ac
 .headline .u { font-size: 15px; color: var(--ink-3); font-family: var(--sans) }
 .warn { background: var(--warn-bg); color: var(--warn-ink); padding: 8px 10px; font: 13px var(--sans); margin-top: 10px }
 .tablewrap { overflow-x: auto }
+.tablewrap.more { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 56px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 56px), transparent) }
+@media (min-width: 1280px) { body.side-open .layout { grid-template-columns: 320px minmax(0, 1fr) } }
 table.bk { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums lining-nums; border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink) }
 .bk th, .bk td { padding: 10px 14px; text-align: right; white-space: nowrap }
 .bk th:first-child, .bk td:first-child { text-align: left }
@@ -928,7 +930,7 @@ document.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', (
 $('nsteps').addEventListener('change', e => { state.N = +e.target.value; schedule(); });
 $('showcal').addEventListener('click', () => { $('calsec').hidden = false; if (mainMsg) drawCal(mainMsg); $('calsec').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
 $('hidecal').addEventListener('click', () => { $('calsec').hidden = true; });
-function setSide(open) { document.body.classList.toggle('side-open', open); $('toggleside').setAttribute('aria-expanded', String(open)); $('toggleside').textContent = open ? 'Hide assumptions' : 'Change assumptions'; if (open && innerWidth >= 768) $('controls').scrollIntoView({ block: 'nearest' });
+function setSide(open) { document.body.classList.toggle('side-open', open); $('toggleside').setAttribute('aria-expanded', String(open)); requestAnimationFrame(tableFade); $('toggleside').textContent = open ? 'Hide assumptions' : 'Change assumptions'; if (open && innerWidth >= 768) $('controls').scrollIntoView({ block: 'nearest' });
   if (open && innerWidth < 768) { const y = $('tiles').getBoundingClientRect().top + scrollY - $('strip').offsetHeight - 8; scrollTo({ top: y }); } }   // phones: keep the headline numbers visible above the sheet
 $('applyside').addEventListener('click', () => { setSide(false); $('calsec').hidden = true; });
 $('strip').querySelector('.logo').innerHTML = document.querySelector('header .logo').innerHTML;
@@ -936,7 +938,7 @@ new IntersectionObserver(es => { $('strip').classList.toggle('show', !es[0].isIn
 $('toggleside').addEventListener('click', () => setSide(!document.body.classList.contains('side-open')));
 $('closeside').addEventListener('click', () => setSide(false));
 const TABS = [['tab_rw', 'panel_rw'], ['tab_credit', 'panel_credit'], ['tab_welfare', 'panel_welfare'], ['tab_cmp', 'panel_cmp']];
-function showTab(id) { TABS.forEach(([b, p]) => { const on = b === id; $(b).setAttribute('aria-selected', String(on)); $(b).tabIndex = on ? 0 : -1; $(p).hidden = !on; }); if (mainMsg) drawCharts(mainMsg); }
+function showTab(id) { TABS.forEach(([b, p]) => { const on = b === id; $(b).setAttribute('aria-selected', String(on)); $(b).tabIndex = on ? 0 : -1; $(p).hidden = !on; }); if (mainMsg) drawCharts(mainMsg); tableFade(); }
 TABS.forEach(([b], i) => { $(b).addEventListener('click', () => showTab(b));
   $(b).addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const j = (i + (e.key === 'ArrowRight' ? 1 : TABS.length - 1)) % TABS.length; showTab(TABS[j][0]); $(TABS[j][0]).focus(); } }); });
 document.querySelectorAll('a[href="#cite"]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); $('cite').open = true; requestAnimationFrame(() => $('cite').scrollIntoView({ block: 'start' })); }));   // the viewer frame does not scroll to #fragments itself
@@ -1044,7 +1046,10 @@ function renderTable() {
     else cells.forEach((c, j) => { const td = document.createElement('td'); td.textContent = c; if (j === 2 && x) td.title = relP(x.z); tr.append(td); });
     tb.append(tr);
   });
+  tableFade();
 }
+function tableFade() { const t = document.querySelector('.tablewrap'); t.classList.toggle('more', t.scrollLeft + t.clientWidth < t.scrollWidth - 2); }   // fade the right edge while columns remain off screen
+document.querySelector('.tablewrap').addEventListener('scroll', tableFade, { passive: true }); addEventListener('resize', tableFade);
 function choose(r) { state.reform = r; $('reform').value = r; schedule(); }
 function figMsg(id, text) { const h = $(id); h.textContent = ''; const d = document.createElement('div'); d.className = 'figmsg'; d.textContent = text; h.append(d); }
 
