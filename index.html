@@ -108,7 +108,7 @@ button.primary { background: var(--ink); color: var(--paper); border-color: var(
 .btns { display: flex; gap: 8px; flex-wrap: wrap }
 main { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; min-width: 0 }
 main > * { min-width: 0 }
-.ctrlbar { display: flex; flex-wrap: wrap; gap: 14px 28px; align-items: end; font-family: var(--sans); border-bottom: 1px solid var(--rule); padding-bottom: 10px }
+.ctrlbar { display: flex; flex-wrap: wrap; gap: 14px 16px; align-items: end; font-family: var(--sans); border-bottom: 1px solid var(--rule); padding-bottom: 10px }
 .ctrlbar .ctl { min-width: 0 }
 .ctrlbar select { max-width: 100% }
 .seg { display: inline-flex; border: 1px solid var(--ink-2); border-radius: 2px; overflow: hidden; flex-wrap: wrap }
@@ -116,8 +116,9 @@ main > * { min-width: 0 }
 .seg button[aria-pressed=true] { background: var(--accent); color: var(--accent-ink) }
 .seg.small { justify-self: start }
 .seg.small button { padding: 4px 10px; font-size: 14px }
-.nrow { display: flex; gap: 12px; align-items: center }
-.nrow input { width: 72px }
+.nrow { display: flex; gap: 8px; align-items: center }
+.nrow input { width: 64px }
+.status:empty { display: none }
 .bk td.unstable { font: italic 13.5px var(--serif); color: var(--warn-ink); text-align: left; white-space: normal }
 #nctl > label { justify-content: flex-start; gap: 4px }
 .figmsg { height: 270px; display: grid; place-items: center; border: 1px solid var(--rule); color: var(--ink-3); font-style: italic; font-size: 14px; text-align: center; padding: 16px }
@@ -226,7 +227,12 @@ button.q:hover, button.q[aria-expanded=true] { background: var(--accent); border
   .cname { grid-column: 1 / -1; min-width: 0 }
   button.q { width: 24px; height: 24px; min-height: 0; font-size: 13px; line-height: 22px }
   .headline .k button.q { width: 20px; height: 20px; line-height: 18px; font-size: 12px }
+  .tabs .tx { display: none }
+  .tabs { gap: 4px 14px !important }
 }
+@media (max-width: 379px) { .tabs { gap: 4px 12px !important } .tabs button { font-size: 16px } }
+@media (max-width: 359px) { header h1 { font-size: 23px } #calsec h2 { font-size: 21px } }
+@media (max-width: 1023px) { #calsec { scroll-margin-top: 60px } }
 @media (max-width: 419px) { .headline .v { font-size: 34px } }
 </style>
 <style>
@@ -241,15 +247,15 @@ img { max-width: 100% }
 <div class="strip" id="strip" aria-hidden="true"><span class="logo"></span><span>Risk Weight Simulator</span></div>
 <header>
   <h1><span class="logo"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6.4" fill="#234D79"/><path d="M7 6.5V25H25.5" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.6 23.4C9.3 15 13.5 10.4 25 8.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>Risk Weight Simulator</h1>
-  <p>Effects of replacing the Basel III internal ratings‑based (IRBA) risk weights on corporate loans with an alternative schedule, such as the Basel III Endgame proposal (65% for investment‑grade loans, 100% otherwise).</p>
-  <p>Calibrated to German corporate lending in Maximilian Jager and Karl Schulz, <i>Nonlinear Bank Capital Regulation</i> (2026). Competitive banking; all effects are measured relative to the current IRBA schedule.</p>
+  <p>Effects of replacing the Basel III internal ratings‑based (IRBA) risk weights on corporate loans with an alternative schedule, such as the Basel III Endgame proposal (65% for investment‑grade loans, 100% otherwise).</p>
+  <p>Calibrated to German corporate lending in Maximilian Jager and Karl Schulz, <i>Nonlinear Bank Capital Regulation</i> (2026). Competitive banking; all effects are measured relative to the current IRBA schedule.</p>
   <p class="cite"><a href="https://drive.google.com/file/d/1gWIlKs8f74dNEKbL3XkxwxFksfOj9e98/view" target="_blank" rel="noopener">Read the paper</a> · <a href="#cite">How to cite</a> · <button type="button" class="linkbtn" id="copylink">Copy link</button></p>
 </header>
 
 <div class="layout">
 <aside id="controls">
   <div class="ahead"><h2>Assumptions</h2><button type="button" id="closeside" aria-label="Close assumptions">Close</button></div>
-  <p class="hint">Open a section to change the economy or the responses. All reforms are recalculated.</p>
+  <p class="hint">Open a section to change the economy or the responses. All reforms are recalculated.</p>
 
   <details id="sec_pd">
     <summary>Distributions</summary>
@@ -291,11 +297,11 @@ img { max-width: 100% }
         <div id="het" hidden>
           <table class="het"><thead><tr><th>Rating group</th><th><span class="sym">ζ<sup>k,ω</sup></span></th><th><span class="sym">ε<sup>k,p</sup></span></th></tr></thead>
             <tbody id="hetbody"></tbody></table>
-          <p class="hint" style="margin-top:6px">Defaults: <i>ζ<sup>k,ω</sup></i> with the Table 5 shape scaled to the IV level, <i>ε<sup>k,p</sup></i> = −0.089 in every group. Groups are blended smoothly at PD 0.02%, 0.14% and 2.98%.</p>
+          <p class="hint" style="margin-top:6px">Defaults: <i>ζ<sup>k,ω</sup></i> with the Table 5 shape scaled to the IV level, <i>ε<sup>k,p</sup></i> = −0.089 in every group. Groups are blended smoothly at PD 0.02%, 0.14% and 2.98%.</p>
         </div>
       </div>
       <div class="grp"><h3>Risk response</h3>
-        <div class="ctl" data-key="eps_p_k" data-min="-1" data-max="2.5" data-step="0.01"><label>Default‑risk sensitivity to credit <span class="sym">ε<sup>p,k</sup></span></label></div>
+        <div class="ctl" data-key="eps_p_k" data-min="-1" data-max="2.5" data-step="0.01"><label>Credit‑risk sensitivity to leverage <span class="sym">ε<sup>p,k</sup></span></label></div>
       </div>
     </div>
   </details>
@@ -350,7 +356,7 @@ img { max-width: 100% }
   </section>
 
   <section id="calsec" hidden>
-    <div class="chead"><div><h2>Calibrated economy</h2><p class="lede">Distributions implied by the current assumptions.</p></div><button type="button" id="hidecal">Close</button></div>
+    <div class="chead"><div><h2>Calibrated economy</h2><p class="lede">Distributions implied by the current assumptions.</p></div><button type="button" id="hidecal">Close</button></div>
     <div class="figs">
       <figure><div class="chart" id="ch_d"></div><figcaption class="caption"><b>Figure A1.</b> Share of loans and of credit by rating group.</figcaption></figure>
       <figure><div class="chart" id="ch_kp"></div><figcaption class="caption"><b>Figure A2.</b> Average credit per loan by probability of default.</figcaption></figure>
@@ -362,9 +368,9 @@ img { max-width: 100% }
 
   <div class="tabs" role="tablist" aria-label="Results">
     <button type="button" role="tab" id="tab_rw" aria-controls="panel_rw" aria-selected="true">Risk weights</button>
-    <button type="button" role="tab" id="tab_credit" aria-controls="panel_credit" aria-selected="false" tabindex="-1">Credit effects</button>
-    <button type="button" role="tab" id="tab_welfare" aria-controls="panel_welfare" aria-selected="false" tabindex="-1">Welfare effects</button>
-    <button type="button" role="tab" id="tab_cmp" aria-controls="panel_cmp" aria-selected="false" tabindex="-1">Compare reforms</button>
+    <button type="button" role="tab" id="tab_credit" aria-controls="panel_credit" aria-selected="false" tabindex="-1">Credit<span class="tx"> effects</span></button>
+    <button type="button" role="tab" id="tab_welfare" aria-controls="panel_welfare" aria-selected="false" tabindex="-1">Welfare<span class="tx"> effects</span></button>
+    <button type="button" role="tab" id="tab_cmp" aria-controls="panel_cmp" aria-selected="false" tabindex="-1">Compare<span class="tx"> reforms</span></button>
   </div>
   <div class="figs one" role="tabpanel" id="panel_rw" aria-labelledby="tab_rw">
     <figure class="res"><div class="chart" id="ch_w"></div><figcaption class="caption"><b>Figure 1.</b> Risk weight <i>ω</i>(<i>p</i>) by probability of default. Dotted lines mark the rating‑group cutoffs.</figcaption></figure>
@@ -388,19 +394,19 @@ img { max-width: 100% }
   <details class="notes">
     <summary>Methodology</summary>
     <div>
-      <p><b>Approximation.</b> Gateaux derivatives at the IRBA schedule, applied to the full schedule change. First-order welfare is linear in the change, so it scales with the size of the reform.</p>
-      <p><b>Full simulation.</b> The reform is split into <i>N</i> steps, and at each step every loan solves its credit and risk response. Results are extrapolated to <i>N</i> → ∞ from <i>N</i> and <i>N</i>/2 steps.</p>
-      <p><b>Fed proposal.</b> Risk weight 65% for investment‑grade corporate loans and 100% for all others, as in the Basel III Endgame proposals of 2023 and March 2026.</p>
-      <p><b>Best simple schedules.</b> The flat, two‑rating, linear and isoelastic schedules with the highest welfare at the baseline calibration. Two ratings weights each borrower by its investment‑grade share. Under changed assumptions they keep these parameters.</p>
+      <p><b>Approximation.</b> Gateaux derivatives at the IRBA schedule, applied to the full schedule change. First-order welfare is linear in the change, so it scales with the size of the reform.</p>
+      <p><b>Full simulation.</b> The reform is split into <i>N</i> steps, and at each step every loan solves its credit and risk response. Results are extrapolated to <i>N</i> → ∞ from <i>N</i> and <i>N</i>/2 steps.</p>
+      <p><b>Fed proposal.</b> Risk weight 65% for investment‑grade corporate loans and 100% for all others, as in the Basel III Endgame proposals of 2023 and March 2026.</p>
+      <p><b>Best simple schedules.</b> The flat, two‑rating, linear and isoelastic schedules with the highest welfare at the baseline calibration. Two ratings weights each borrower by its investment‑grade share. Under changed assumptions they keep these parameters.</p>
       <p><b>Optimal schedule.</b> The risk weight of each loan equals the marginal welfare externality of its credit, <i>b</i>(<i>p</i>), shown in Figure A4.</p>
-      <p><b>Numerical checks.</b> A reform is marked invalid when its schedule sets negative risk weights, its step equation fails to converge, the denominator of its step update turns zero or negative, or a result is infinite. PD is capped at 100%.</p>
-      <p><b>Baseline calibration.</b> <i>ζ<sup>k,ω</sup></i> = −0.349 (reform-based estimate). Baseline values: <i>F</i>(<i>z</i>*) = 5%, <i>κ<sub>T</sub></i> = 0.3, investment-grade share 57%, loan rate <i>r</i> = 4.68%, depreciation rate <i>ι</i> = 0.1965. Fixed: <i>f</i>(<i>z</i>*) = 1.2, <i>ζ<sup>k,ω′</sup></i> = 0 (estimated value 0.001). Figures show <i>p</i> up to 10%; the PD grid runs to 50%.</p>
+      <p><b>Numerical checks.</b> A reform is marked invalid when its schedule sets negative risk weights, its step equation fails to converge, the denominator of its step update turns zero or negative, or a result is infinite. PD is capped at 100%.</p>
+      <p><b>Baseline calibration.</b> <i>ζ<sup>k,ω</sup></i> = −0.349 (reform-based estimate). Baseline values: <i>F</i>(<i>z</i>*) = 5%, <i>κ<sub>T</sub></i> = 0.3, investment-grade share 57%, loan rate <i>r</i> = 4.68%, depreciation rate <i>ι</i> = 0.1965. Fixed: <i>f</i>(<i>z</i>*) = 1.2, <i>ζ<sup>k,ω′</sup></i> = 0 (estimated value 0.001). Figures show <i>p</i> up to 10%; the PD grid runs to 50%.</p>
     </div>
   </details>
   <details class="notes" id="cite">
     <summary>Citation</summary>
     <div>
-      <div class="chead"><p>Jager, Maximilian, and Karl Schulz (2026). "Nonlinear Bank Capital Regulation." Working paper, October 2026. <a href="https://drive.google.com/file/d/1gWIlKs8f74dNEKbL3XkxwxFksfOj9e98/view" target="_blank" rel="noopener">Read the paper</a></p><button type="button" id="copybib">Copy BibTeX</button></div>
+      <div class="chead"><p>Jager, Maximilian, and Karl Schulz (2026). "Nonlinear Bank Capital Regulation." Working paper, October 2026. <a href="https://drive.google.com/file/d/1gWIlKs8f74dNEKbL3XkxwxFksfOj9e98/view" target="_blank" rel="noopener">Read the paper</a></p><button type="button" id="copybib">Copy BibTeX</button></div>
       <div class="bibwrap"><pre id="bibtex">@article{JagerSchulz2026,
   author  = {Jager, Maximilian and Schulz, Karl},
   title   = {Nonlinear Bank Capital Regulation},
@@ -1009,8 +1015,8 @@ function renderMain(m) {
   F_BASE = m.Fz; if (popFor && popFor.closest('#tiles')) closePop();
   const pct = v => (100 * v).toFixed(2) + '%';
   $('restitle').innerHTML = label(q.reform);
-  $('ressub').textContent = `Aggregate effects of moving from IRBA (${methodText(q)}).`;
-  const tiles = [['Equity', show(R.E, 2), '% of required bank equity'], ['Credit', show(R.L, 2), '% of credit'], ['Bailout probability', show(100 * F_DENS * R.z, 3), bad ? 'pp' : `pp, from ${pct(F_BASE)} to ${pct(F_BASE + F_DENS * R.z)}`], ['Welfare', show(R.W, 4), 'EUR 1,000 per loan']];
+  $('ressub').textContent = `Aggregate effects of moving from IRBA (${methodText(q)}).`;
+  const tiles = [['Equity', show(R.E, 2), '% of required bank equity'], ['Credit', show(R.L, 2), '% of credit'], ['Bailout probability', show(100 * F_DENS * R.z, 3), bad ? 'pp' : `pp, from ${pct(F_BASE)} to ${pct(F_BASE + F_DENS * R.z)}`], ['Welfare', show(R.W, 4), 'EUR 1,000 per loan']];
   const host = $('tiles'); host.textContent = '';
   tiles.forEach(([k, v, u], j) => { const d = document.createElement('div'); if (j === 2 && !bad) d.title = relP(R.z);
     const a = document.createElement('div'); a.className = 'k'; a.textContent = k; a.insertAdjacentHTML('afterbegin', KPI_ICONS[ICON_ORDER[j]]); const b = document.createElement('div'); b.className = 'v'; b.textContent = v;
@@ -1018,7 +1024,7 @@ function renderMain(m) {
   const w = [];
   if (bad) w.push('Invalid at these inputs: ' + R.reasons.join('; ') + '.');
   $('warn').hidden = !w.length; $('warn').textContent = w.join(' ');
-  $('pdstats').textContent = `Implied PD: mean ${(100 * m.meanp).toFixed(2)}%, SD ${(100 * m.sdp).toFixed(2)}%, median ${(100 * m.pmed).toFixed(2)}%`;
+  $('pdstats').textContent = `Implied PD: mean ${(100 * m.meanp).toFixed(2)}%, SD ${(100 * m.sdp).toFixed(2)}%, median ${(100 * m.pmed).toFixed(2)}%`;
   $('kstats').textContent = `Model credit per loan, EUR 1,000: mean ${num(m.kModelMean)}, SD ${num(m.kModelSd)}. SD of log credit ${m.sigma_log_k.toFixed(3)}`;
   if (state.epsAuto) ctls.eps_p_k.set(m.eps_p_k);
   document.querySelectorAll('.fz').forEach(e => e.textContent = +(100 * m.Fz).toFixed(1));
