@@ -793,11 +793,12 @@ img { max-width: 100% }
     <button type="button" role="tab" id="tab_cmp" aria-controls="panel_cmp" aria-selected="false" tabindex="-1">Compare<span class="tx"> reforms</span></button>
   </div>
   <div class="calcbox" id="calcbox">
-    <span class="clab">Calculation</span><button type="button" class="q" data-help="calc" aria-label="Explain: calculation" aria-expanded="false">?</button>
+    <span class="clab">Calculation</span>
     <div class="seg" role="group" aria-label="Calculation">
       <button type="button" data-m="fo" aria-pressed="false">Approximation</button>
       <button type="button" data-m="lr" aria-pressed="true">Full simulation</button>
     </div>
+    <button type="button" class="q" data-help="calc" aria-label="Explain: calculation" aria-expanded="false">?</button>
     <details class="adv" id="adv"><summary>Steps <i>N</i> = <span id="nshow">10</span></summary>
       <div class="advpanel"><label for="nsteps">Steps <i>N</i> in the full simulation</label>
         <div class="nrow"><input type="number" id="nsteps" min="2" max="400" step="2" value="10"><span class="hint">exact: <i>N</i> → ∞</span></div></div></details>
@@ -1618,5 +1619,6 @@ let rz = null, lastW = 0; new ResizeObserver(es => { const w = Math.round(es[0].
 reset(); applyURL(); send();
 })();
 </script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "83331139b203419db6cbc0e5b720d35b"}'></script>
 </body>
 </html>
