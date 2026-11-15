@@ -558,6 +558,9 @@ section h2 { font-size: 25px; font-weight: 500; margin: 0 0 4px; color: var(--ac
 .headline .k svg { flex: none; color: var(--icon) }
 .headline .v { font-size: 43px; margin: 2px 0 1px; font-variant-numeric: tabular-nums lining-nums; line-height: 1.15 }
 .headline .u { font-size: 15px; color: var(--ink-3); font-family: var(--sans) }
+.headline .v.flash { width: fit-content; margin-left: -4px; padding: 0 4px; border-radius: 2px; animation: vflash .4s ease-out }
+@keyframes vflash { from { background-color: color-mix(in srgb, var(--accent) 18%, transparent) } to { background-color: transparent } }
+@media (prefers-reduced-motion: reduce) { .headline .v.flash { animation: none } }
 .warn { background: var(--warn-bg); color: var(--warn-ink); padding: 8px 10px; font: 13px var(--sans); margin-top: 10px }
 .tablewrap { overflow-x: auto }
 .tablewrap.more { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 56px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 56px), transparent) }
@@ -1442,6 +1445,7 @@ const ICON_ORDER = ['equity', 'credit', 'bailout', 'welfare'];
 const F_DENS = 1.2; let F_BASE = 0.05;   // f(z*) fixed (script line 1009); F(z*) from the inputs (line 1007)
 const relP = z => Number.isFinite(z) ? `Percent change: ${fmt(100 * F_DENS * z / F_BASE, 2)}% of the ${+(100 * F_BASE).toFixed(1)}% bailout probability` : '';
 const methodText = q => q.method === 'fo' ? 'approximation' : 'full simulation';
+let lastTiles = null;
 function renderMain(m) {
   const R = m.R;
   const q = m.req, bad = R.unstable, show = (v, d) => bad ? 'invalid' : fmt(v, d);
@@ -1451,9 +1455,11 @@ function renderMain(m) {
   $('ressub').textContent = `Aggregate effects of moving from IRBA (${methodText(q)}).`;
   const tiles = [['Equity', show(R.E, 2), '% of required bank equity'], ['Credit', show(R.L, 2), '% of credit'], ['Bailout probability', show(100 * F_DENS * R.z, 3), bad ? 'pp' : `pp, from ${pct(F_BASE)} to ${pct(F_BASE + F_DENS * R.z)}`], ['Welfare', show(R.W, 4), 'EUR 1,000 per loan']];
   const host = $('tiles'); host.textContent = '';
+  const step = lastTiles && (lastTiles.q.reform !== q.reform || lastTiles.q.method !== q.method || lastTiles.q.N !== q.N);   // a new reform, calculation or N: highlight the values that changed
   tiles.forEach(([k, v, u], j) => { const d = document.createElement('div'); if (j === 2 && !bad) d.title = relP(R.z);
-    const a = document.createElement('div'); a.className = 'k'; a.textContent = k; a.insertAdjacentHTML('afterbegin', KPI_ICONS[ICON_ORDER[j]]); const b = document.createElement('div'); b.className = 'v'; b.textContent = v;
+    const a = document.createElement('div'); a.className = 'k'; a.textContent = k; a.insertAdjacentHTML('afterbegin', KPI_ICONS[ICON_ORDER[j]]); const b = document.createElement('div'); b.className = 'v' + (step && lastTiles.v[j] !== v ? ' flash' : ''); b.textContent = v;
     const c = document.createElement('div'); c.className = 'u'; c.textContent = u; if (j === 3) a.append(qBtn('welfare')); d.append(a, b, c); host.append(d); });
+  lastTiles = { q, v: tiles.map(t => t[1]) };
   const w = [];
   if (bad) w.push('Invalid at these inputs: ' + R.reasons.join('; ') + '.');
   $('warn').hidden = !w.length; $('warn').textContent = w.join(' ');
@@ -1482,26 +1488,28 @@ function renderTable() {
 function tableFade() { const t = document.querySelector('.tablewrap'); t.classList.toggle('more', t.scrollLeft + t.clientWidth < t.scrollWidth - 2); }   // fade the right edge while columns remain off screen
 document.querySelector('.tablewrap').addEventListener('scroll', tableFade, { passive: true }); addEventListener('resize', tableFade);
 function choose(r) { state.reform = r; $('reform').value = r; schedule(); }
-function figMsg(id, text) { const h = $(id); h.textContent = ''; const d = document.createElement('div'); d.className = 'figmsg'; d.textContent = text; h.append(d); }
+function figMsg(id, text) { const h = $(id); cancelAnimationFrame(h._raf); h._key = h._cur = null; h.textContent = ''; const d = document.createElement('div'); d.className = 'figmsg'; d.textContent = text; h.append(d); }
 
 const CUTS = [0.0002, 0.0014, 0.0298];
 const PX = { ticks: [1e-4, 1e-3, 1e-2, 1e-1], lab: p => (100 * p) + '%', title: 'Probability of default, p (log scale)', tipx: p => 'p = ' + (100 * p).toPrecision(3) + '%' };
 function idx(arr, lim) { const o = []; for (let i = 1; i < arr.length && arr[i] <= lim; i += 6) o.push(i); let j = o[o.length - 1]; while (j + 1 < arr.length && arr[j + 1] <= lim) j++; if (j !== o[o.length - 1]) o.push(j); return o; }
 function drawCharts(m) {
-  const I = idx(m.p, P_SHOW), P = I.map(i => m.p[i]), sel = m.req.reform, ySel = I.map(i => m.schedules[sel][i]);
-  const anim = prevRW && prevRW.reform !== sel && prevRW.y.length === P.length && prevRW.p0 === P[0] && !$('panel_rw').hidden ? { i: 1, from: prevRW.y } : null;   // a new reform: the curve moves from the old schedule
-  prevRW = { reform: sel, y: ySel, p0: P[0] };
+  const I = idx(m.p, P_SHOW), P = I.map(i => m.p[i]), sel = m.req.reform;
+  // A new reform under the same calculation and grid: each visible figure moves its curves from the values on screen (host._cur) to the new ones.
+  const same = '|' + m.req.method + '|' + P.length + '|' + P[0], key = sel + same;
+  const from = id => { const h = $(id), p = h._key; h._key = key;
+    return p && p !== key && p.endsWith(same) && h._cur && !h.closest('[role=tabpanel]').hidden ? h._cur : null; };
   lineChart($('ch_w'), P, [{ name: 'IRBA (current)', color: 'var(--base)', y: I.map(i => m.schedules.irba[i]), dash: '6 3' },
-                          { name: NAMES[sel], color: 'var(--accent)', y: ySel }],
-    { scale: 100, suffix: '%', tfmt: v => (100 * v).toFixed(1) + '%', cuts: true, x: PX, ytitle: 'Risk weight ω', anim });
+                          { name: NAMES[sel], color: 'var(--accent)', y: I.map(i => m.schedules[sel][i]) }],
+    { scale: 100, suffix: '%', tfmt: v => (100 * v).toFixed(1) + '%', cuts: true, x: PX, ytitle: 'Risk weight ω', anim: from('ch_w') });
   if (m.R.unstable) { ['ch_k', 'ch_t', 'ch_v'].forEach(id => figMsg(id, 'Figure omitted: the reform is invalid at these inputs.')); return; }
   const kser = [{ name: m.req.method === 'fo' ? NAMES[sel] + ', approximation' : NAMES[sel] + ', full simulation', color: 'var(--accent)', y: I.map(i => 100 * m.R.k_hat[i] / m.k[i]) }];
   if (m.req.method !== 'fo') kser.unshift({ name: 'Approximation', color: 'var(--base)', dash: '6 3', y: I.map(i => 100 * m.k_hat_fo[i] / m.k[i]) });
-  lineChart($('ch_k'), P, kser, { tfmt: v => v.toFixed(2) + '%', zero: true, x: PX, ytitle: 'Change in credit (%)' });
+  lineChart($('ch_k'), P, kser, { tfmt: v => v.toFixed(2) + '%', zero: true, x: PX, ytitle: 'Change in credit (%)', anim: from('ch_k') });
   lineChart($('ch_t'), P, [{ name: 'Total', color: 'var(--accent)', y: I.map(i => m.R.Wi[i]) }],
-    { tfmt: v => v.toFixed(4), zero: true, single: true, x: PX, ytitle: 'Welfare (EUR 1,000)' });
+    { tfmt: v => v.toFixed(4), zero: true, single: true, x: PX, ytitle: 'Welfare (EUR 1,000)', anim: from('ch_t') });
   lineChart($('ch_v'), P, [{ name: 'Entrepreneurs', color: 'var(--s1)', y: I.map(i => m.R.V_Ei[i]), dash: '6 3' }, { name: 'Households', color: 'var(--s2)', y: I.map(i => m.R.V_Hi[i]), dash: '1.5 2.5' }],
-    { tfmt: v => v.toFixed(4), zero: true, x: PX, ytitle: 'Welfare (EUR 1,000)' });
+    { tfmt: v => v.toFixed(4), zero: true, x: PX, ytitle: 'Welfare (EUR 1,000)', anim: from('ch_v') });
 }
 function drawCal(m) {
   const I = idx(m.p, P_SHOW), P = I.map(i => m.p[i]);
@@ -1544,7 +1552,7 @@ const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag)
 const key = (s, w) => { const sv = mk('svg', { viewBox: `0 0 ${w} 6` }); const l = mk('line', { x1: 0, x2: w, y1: 3, y2: 3, 'stroke-width': 2 }, sv); l.style.stroke = s.color; if (s.dash) l.setAttribute('stroke-dasharray', s.dash); return sv; };
 function niceTicks(lo, hi, n) { const span = hi - lo || 1, step0 = span / n, mag = Math.pow(10, Math.floor(Math.log10(step0))), f = step0 / mag;
   const step = (f < 1.5 ? 1 : f < 3 ? 2 : f < 7 ? 5 : 10) * mag, t = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-12 * span; v += step) t.push(+v.toPrecision(12)); t.dec = Math.max(0, -Math.floor(Math.log10(step) + 1e-9)); return t; }
-let prevRW = null, tipOff = null, tipHost = null;   // last drawn Figure 1 schedule; the open touch tooltip and its chart
+let tipOff = null, tipHost = null;   // the open touch tooltip and its chart
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
 function dropTip() { if (tipOff) tipOff(); tipOff = null; tipHost = null; }
 document.addEventListener('pointerdown', e => { if (tipHost && !tipHost.contains(e.target)) dropTip(); }, true);   // a tap elsewhere closes it
@@ -1573,13 +1581,15 @@ function lineChart(host, P, series, o) {
   if (o.zero && lo < 0 && hi > 0) mk('line', { class: 'zero', x1: x0, x2: x1, y1: Y(0), y2: Y(0) }, svg);
   const pathD = y => { let d = '', pen = false; y.forEach((v, i) => { if (Number.isFinite(v)) { d += (pen ? 'L' : 'M') + X(P[i]).toFixed(1) + ' ' + Y(v).toFixed(1); pen = true; } else pen = false; }); return d; };
   const paths = series.map(s => { const pa = mk('path', { d: pathD(s.y), fill: 'none', 'stroke-width': s.color === 'var(--accent)' ? 2.4 : 1.75, 'stroke-linejoin': 'round' }, svg); pa.style.stroke = s.color; if (s.dash) pa.setAttribute('stroke-dasharray', s.dash); return pa; });
-  if (o.anim && !reduceMotion.matches) {   // move the changed curve from the old to the new values on the new axes, about 320 ms
+  host._cur = series.map(s => s.y.slice());   // the values on screen
+  const moving = o.anim && !reduceMotion.matches ? series.map((s, i) => { const a = o.anim[i]; return a && a.length === s.y.length ? { pa: paths[i], a, b: s.y, i } : null; }).filter(Boolean) : [];
+  if (moving.length) {   // move the curves from the old to the new values on the new axes, about 320 ms; a series without matching old values is drawn at once
     const cid = 'clip_' + host.id, cp = mk('clipPath', { id: cid }, svg); mk('rect', { x: x0, y: y0, width: iw, height: ih }, cp);
-    const pa = paths[o.anim.i], a = o.anim.from, b = series[o.anim.i].y, t0 = performance.now(), D = 320;
-    pa.setAttribute('clip-path', `url(#${cid})`);
-    const frame = now => { const u = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - u, 3);
-      pa.setAttribute('d', pathD(b.map((v, i) => Number.isFinite(v) && Number.isFinite(a[i]) ? a[i] + (v - a[i]) * e : v)));
-      if (u < 1) host._raf = requestAnimationFrame(frame); else { pa.setAttribute('d', pathD(b)); pa.removeAttribute('clip-path'); } };
+    moving.forEach(m => m.pa.setAttribute('clip-path', `url(#${cid})`));
+    const t0 = performance.now(), D = 320;
+    const frame = now => { const u = Math.min(1, Math.max(0, (now - t0) / D)), e = 1 - Math.pow(1 - u, 3);
+      moving.forEach(m => { const y = m.b.map((v, i) => Number.isFinite(v) && Number.isFinite(m.a[i]) ? m.a[i] + (v - m.a[i]) * e : v); host._cur[m.i] = y; m.pa.setAttribute('d', pathD(y)); });
+      if (u < 1) host._raf = requestAnimationFrame(frame); else moving.forEach(m => { host._cur[m.i] = m.b.slice(); m.pa.setAttribute('d', pathD(m.b)); m.pa.removeAttribute('clip-path'); }); };
     frame(t0);
   }
   mk('rect', { class: 'frame', x: x0, y: y0, width: iw, height: ih }, svg);
