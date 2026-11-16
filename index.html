@@ -640,8 +640,8 @@ a { color: var(--accent) }
 .bibwrap pre { margin: 0; padding: 12px 14px; overflow-x: auto; font: 14px/1.5 ui-monospace, "SFMono-Regular", Consolas, monospace; color: var(--ink) }
 
 .err { color: var(--warn-ink); background: var(--warn-bg); padding: 6px 8px; font-size: 12.5px }
-button.q { flex: none; width: 19px; height: 19px; min-height: 0; padding: 0; border-radius: 50%; border: 1px solid var(--ink-3); background: transparent; color: var(--ink-3);
-  font: 600 12px/17px var(--sans); text-align: center; letter-spacing: 0; text-transform: none; vertical-align: middle }
+button.q { position: relative; flex: none; width: 16px; height: 16px; min-height: 0; padding: 0; border-radius: 50%; border: 1px solid var(--ink-3); background: transparent; color: var(--ink-3);
+  font: italic 600 12px/14px var(--serif); text-align: center; letter-spacing: 0; text-transform: none; vertical-align: middle }
 button.q:hover, button.q[aria-expanded=true] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink) }
 .ctl > label.hasq { align-items: flex-start }
 .ctl > label.hasq .lt { flex: 1 1 auto; min-width: 0 }
@@ -650,7 +650,8 @@ button.q:hover, button.q[aria-expanded=true] { background: var(--accent); border
 .ctl > label.hasq button.q { margin-top: 2px }
 .linkbtn { font: inherit; color: var(--accent); background: none; border: 0; padding: 0; min-height: 0; text-decoration: underline; cursor: pointer }
 .segrow { display: flex; align-items: center; gap: 8px }
-.headline .k button.q { margin-left: 1px }
+.headline .k button.q { margin-left: 1px; width: 15px; height: 15px; font-size: 11px; line-height: 13px }
+button.q::after { content: ""; position: absolute; inset: -6px }   /* tap area larger than the circle */
 .pop { position: absolute; z-index: 60; width: max-content; max-width: min(340px, calc(100vw - 32px)); background: var(--paper); color: var(--ink-2); border: 1px solid var(--rule);
   box-shadow: 0 4px 16px rgba(0,0,0,.16); padding: 10px 13px; font: 15px/1.45 var(--sans); text-wrap: pretty }
 .pop p { margin: 0 } .pop p + p { margin-top: 6px } .pop b { color: var(--ink); font-weight: 600 }
@@ -662,8 +663,9 @@ button.q:hover, button.q[aria-expanded=true] { background: var(--accent); border
   .headline .u { font-size: 12px }
   .crow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px }
   .cname { grid-column: 1 / -1; min-width: 0 }
-  button.q { width: 24px; height: 24px; min-height: 0; font-size: 13px; line-height: 22px }
-  .headline .k button.q { width: 20px; height: 20px; line-height: 18px; font-size: 12px }
+  button.q { width: 20px; height: 20px; min-height: 0; font-size: 14px; line-height: 18px }
+  button.q::after { inset: -10px }
+  .headline .k button.q { width: 17px; height: 17px; line-height: 15px; font-size: 12px }
   .tabs .tx { display: none }
   .tabs { gap: 4px 14px !important }
 }
@@ -736,7 +738,7 @@ img { max-width: 100% }
         <div class="segrow"><div class="seg small" role="group" aria-label="Credit elasticities">
           <button type="button" data-h="0" aria-pressed="true">Uniform</button>
           <button type="button" data-h="1" aria-pressed="false">By rating group</button>
-        </div><button type="button" class="q" data-help="het" aria-label="Explain: by rating group" aria-expanded="false">?</button></div>
+        </div><button type="button" class="q" data-help="het" aria-label="Explain: by rating group" aria-expanded="false">i</button></div>
         <div id="uni" class="grp">
           <div class="ctl" data-key="zu" data-min="-0.55" data-max="-0.001" data-step="0.001"><label>Credit sensitivity to risk weights <span class="sym">ζ<sup>k,ω</sup></span></label></div>
           <div class="ctl" data-key="eku" data-min="-0.2" data-max="0" data-step="0.001"><label>Credit sensitivity to default risk <span class="sym">ε<sup>k,p</sup></span></label></div>
@@ -818,7 +820,7 @@ img { max-width: 100% }
       <button type="button" data-m="fo" aria-pressed="false">Approximation</button>
       <button type="button" data-m="lr" aria-pressed="true">Full simulation</button>
     </div>
-    <button type="button" class="q" data-help="calc" aria-label="Explain: calculation" aria-expanded="false">?</button>
+    <button type="button" class="q" data-help="calc" aria-label="Explain: calculation" aria-expanded="false">i</button>
     <details class="adv" id="adv"><summary>Steps <i>N</i> = <span id="nshow">10</span></summary>
       <div class="advpanel"><label for="nsteps">Steps <i>N</i> in the full simulation</label>
         <div class="nrow"><input type="number" id="nsteps" min="2" max="400" step="2" value="10"><span class="hint">exact: <i>N</i> → ∞</span></div></div></details>
@@ -834,7 +836,7 @@ img { max-width: 100% }
       <option value="2" selected>Equity (%)</option><option value="3">Credit (%)</option><option value="4">Bailout probability (pp)</option>
       <option value="5">Entrepreneurs</option><option value="6">Households</option><option value="7">Welfare</option></select></div>
     <div class="tablewrap"><table class="bk" id="cmp" aria-describedby="cmpcap" data-col="2">
-      <thead><tr><th>Reform <button type="button" class="q" data-help="best" aria-label="Explain: best schedules" aria-expanded="false">?</button></th><th>Equity (%)</th><th>Credit (%)</th><th title="Change in the bailout probability, percentage points">Bailout prob. (pp)</th><th>Entrepreneurs</th><th>Households</th><th>Welfare</th></tr></thead><tbody></tbody></table></div>
+      <thead><tr><th>Reform <button type="button" class="q" data-help="best" aria-label="Explain: best schedules" aria-expanded="false">i</button></th><th>Equity (%)</th><th>Credit (%)</th><th title="Change in the bailout probability, percentage points">Bailout prob. (pp)</th><th>Entrepreneurs</th><th>Households</th><th>Welfare</th></tr></thead><tbody></tbody></table></div>
     <p class="caption">Equity changes as a percentage of required bank equity; credit changes as a percentage of total credit. Bailout probability: change in percentage points from <i>F</i>(<i>z</i>*) = <span class="fz">5</span>%, the local approximation <i>f</i>(<i>z</i>*)·Δ<i>z</i>*. Welfare in EUR 1,000 per loan. Banks earn zero profits under competition. Aggregate welfare weights banks, entrepreneurs and households equally.</p>
   </section>
   </div>
@@ -1297,7 +1299,7 @@ const HELP = {
   r: 'Loan interest rate, which sets the bank’s value in a bailout. Baseline 4.68% (Corbae and D’Erasmo, 2021).',
   post_liquid: 'Share of loan value lost when a failed bank’s loan portfolio is liquidated. Baseline 19.65% (Corbae and D’Erasmo, 2021).'
 };
-const qBtn = key => { const b = document.createElement('button'); b.type = 'button'; b.className = 'q'; b.dataset.help = key; b.textContent = '?'; b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-label', 'Explain'); return b; };
+const qBtn = key => { const b = document.createElement('button'); b.type = 'button'; b.className = 'q'; b.dataset.help = key; b.textContent = 'i'; b.setAttribute('aria-expanded', 'false'); b.setAttribute('aria-label', 'Explain'); return b; };
 document.querySelectorAll('.ctl[data-key]').forEach(el => {   // label = [text symbol][?]; the last word stays on one line with the symbol
   const key = el.dataset.key, lab = el.querySelector('label'); if (!HELP[key] || !lab) return;
   const sym = lab.querySelector('.sym'), cl = lab.cloneNode(true); cl.querySelectorAll('.sym').forEach(s => s.remove());
