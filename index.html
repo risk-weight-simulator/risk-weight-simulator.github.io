@@ -806,7 +806,7 @@ img { max-width: 100% }
   <section id="calsec" hidden>
     <div class="chead"><div><h2>Calibrated economy</h2><p class="lede">Distributions implied by the current assumptions.</p></div><button type="button" id="hidecal">Close</button></div>
     <div class="figs">
-      <figure><div class="chart" id="ch_d"></div><figcaption class="caption"><b>Figure A1.</b> Share of loans and of credit by rating group.</figcaption></figure>
+      <figure><div class="chart" id="ch_d"></div><figcaption class="caption"><b>Figure A1.</b> Share of loan count and of credit volume by rating group.</figcaption></figure>
       <figure><div class="chart" id="ch_kp"></div><figcaption class="caption"><b>Figure A2.</b> Average credit per loan by probability of default.</figcaption></figure>
       <figure><div class="chart" id="ch_ig"></div><figcaption class="caption"><b>Figure A3.</b> Share of borrowers rated investment grade, which the Fed rule weights at 65%.</figcaption></figure>
       <figure><div class="chart" id="ch_xi"></div><figcaption class="caption"><b>Figure A4.</b> Marginal welfare externality of credit <i>b</i>(<i>p</i>) and the current IRBA risk weight, by probability of default. <i>b</i>(<i>p</i>) is the risk weight whose capital charge equals the external effect of one more euro of credit.</figcaption></figure>
@@ -1542,7 +1542,7 @@ function drawCal(m) {
   const I = idx(m.p, P_SHOW), P = I.map(i => m.p[i]);
   const sl = [0, 0, 0, 0], sc = [0, 0, 0, 0]; let ks = 0;   // loans and credit by rating group, cutoffs as in the elasticity groups
   for (let i = 0; i < m.p.length; i++) { const g = m.p[i] < CUTS[0] ? 0 : m.p[i] < CUTS[1] ? 1 : m.p[i] < CUTS[2] ? 2 : 3; sl[g] += m.pmf[i]; sc[g] += m.pmf[i] * m.k[i]; ks += m.pmf[i] * m.k[i]; }
-  barChart($('ch_d'), GROUPS, [{ name: 'Loans', color: 'var(--ink-2)', y: sl }, { name: 'Credit', color: 'var(--s2)', y: sc.map(v => v / ks) }]);
+  barChart($('ch_d'), GROUPS, [{ name: 'Loan count', color: 'var(--ink-2)', y: sl }, { name: 'Credit volume', color: 'var(--s2)', y: sc.map(v => v / ks) }]);
   lineChart($('ch_kp'), P, [{ name: 'Average credit per loan', color: 'var(--ink)', y: I.map(i => m.k[i] / 1000) }],
     { tfmt: v => '€' + v.toFixed(1) + 'm', x: PX, ytitle: 'Credit per loan (€ million)' });
   lineChart($('ch_ig'), P, [{ name: 'Investment-grade share', color: 'var(--ink)', y: I.map(i => m.share[i]) }],
@@ -1562,7 +1562,7 @@ function barChart(host, cats, series) {
   const g = mk('g', { class: 'grid' }, svg);
   t.forEach(v => { if (v > hi) return; mk('line', { x1: x0, x2: x0 + iw, y1: Y(v), y2: Y(v) }, g); mk('line', { class: 'tick', x1: x0 - 4, x2: x0, y1: Y(v), y2: Y(v) }, svg);
     const tx = mk('text', { x: x0 - 7, y: Y(v) + 4, 'text-anchor': 'end' }, svg); tx.textContent = (100 * v).toFixed(t.dec > 1 ? t.dec - 2 : 0) + '%'; });
-  const yt = mk('text', { class: 'ttl', x: 0, y: 0, 'text-anchor': 'middle', transform: `translate(13 ${mg.t + ih / 2}) rotate(-90)` }, svg); yt.textContent = 'Share (%)';
+  const yt = mk('text', { class: 'ttl', x: 0, y: 0, 'text-anchor': 'middle', transform: `translate(13 ${mg.t + ih / 2}) rotate(-90)` }, svg); yt.textContent = 'Share of total (%)';
   const cw = iw / cats.length, bw = Math.min(34, cw / (series.length + 1.2)), obst = [];
   cats.forEach((c, ci) => {
     const cx = x0 + cw * (ci + 0.5);
