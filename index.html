@@ -530,7 +530,7 @@ main > * { min-width: 0 }
 .bk td.unstable { font: italic 13.5px var(--serif); color: var(--warn-ink); text-align: left; white-space: normal }
 .c-ref select { font-size: 18px; min-width: min(100%, 330px); padding: 6px 8px }
 .c-ass { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap }
-.tabbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 24px; border-bottom: 1px solid var(--rule); margin-bottom: -6px }
+.tabbar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 24px; border-bottom: 1px solid var(--rule); margin-bottom: 8px }
 .tabbar .tabs { flex: 1 1 auto; min-width: 0; border-bottom: 0; margin-bottom: 0 }
 .tabbar.stack { border-bottom: 0 }
 .tabbar.stack .tabs { flex-basis: 100%; border-bottom: 1px solid var(--rule) }
@@ -694,7 +694,7 @@ img { max-width: 100% }
 <div class="strip" id="strip" aria-hidden="true"><span class="logo"></span><span>Risk Weight Simulator</span></div>
 <header>
   <h1><span class="logo"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6.4" fill="#234D79"/><path d="M7 6.5V25H25.5" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.6 23.4C9.3 15 13.5 10.4 25 8.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>Risk Weight Simulator</h1>
-  <p>How should Basel III risk weights be designed? Explore how different regulatory risk weights affect bank lending, financial stability, and welfare.</p>
+  <p>How should Basel III risk weights be designed? Explore how different regulatory risk weights affect credit allocation, financial stability, and welfare.</p>
   <p class="attr">Calibrated to German corporate lending · Competitive banking · Relative to current Basel III IRBA risk weights</p>
   <p class="cite">Jager &amp; Schulz (2026) · <a href="https://drive.google.com/file/d/1gWIlKs8f74dNEKbL3XkxwxFksfOj9e98/view" target="_blank" rel="noopener">Read the paper</a> · <a href="#cite">How to cite</a> · <button type="button" class="linkbtn" id="copylink">Copy link</button></p>
 </header>
@@ -1183,7 +1183,7 @@ if (typeof module !== 'undefined' && module.exports) module.exports = api; else 
 <script>
 (function () {
 'use strict';
-const NAMES = { fed: 'Fed proposal', sa: 'Current standardized approach', u65: 'Uniform 65%', u100: 'Uniform 100%', flat: 'Best flat (82%)', ig2: 'Best two ratings (62% / 117%)', lin: 'Best linear', iso: 'Best isoelastic', fb: 'Optimal schedule' };
+const NAMES = { fed: 'Fed proposal', sa: 'Standardized approach', u65: 'Uniform 65%', u100: 'Uniform 100%', flat: 'Best flat (82%)', ig2: 'Best two ratings (62% / 117%)', lin: 'Best linear', iso: 'Best isoelastic', fb: 'Optimal schedule' };
 const LABEL = { lin: 'Best linear, <span class="nwf"><i>ω</i> = 0.69 + 9.58 <i>p</i></span>', iso: 'Best isoelastic, <span class="nwf"><i>ω</i> = 1.92 <i>p</i><sup>0.15</sup></span>', ig2: 'Best two ratings <span class="nwf">(62% / 117%)</span>' };   // fixed markup, set as HTML
 const label = r => LABEL[r] || NAMES[r];
 const ORDER = ['fed', 'sa', 'u65', 'u100', 'flat', 'ig2', 'lin', 'iso', 'fb'];
@@ -1534,7 +1534,7 @@ function drawCharts(m) {
     { scale: 100, suffix: '%', tfmt: v => (100 * v).toFixed(1) + '%', cuts: true, x: PX, ytitle: 'Risk weight ω', anim: from('ch_w'), legendExtra: $('cmpwith') });
   sizeCmp();
   if (m.R.unstable) { ['ch_k', 'ch_t', 'ch_v'].forEach(id => figMsg(id, 'Figure omitted: the reform is invalid at these inputs.')); return; }
-  const kser = [{ name: m.req.method === 'fo' ? NAMES[sel] + ', approximation' : NAMES[sel] + ', full simulation', color: 'var(--accent)', y: I.map(i => 100 * m.R.k_hat[i] / m.k[i]) }];
+  const kser = [{ name: m.req.method === 'fo' ? NAMES[sel] + ', approximation' : NAMES[sel] + ', full simulation', color: 'var(--accent)', y: I.map(i => 100 * m.R.k_hat[i] / m.k[i]) }];
   if (m.req.method !== 'fo') kser.unshift({ name: 'Approximation', color: 'var(--base)', dash: '6 3', y: I.map(i => 100 * m.k_hat_fo[i] / m.k[i]) });
   lineChart($('ch_k'), P, kser, { tfmt: v => v.toFixed(2) + '%', zero: true, x: PX, ytitle: 'Change in credit (%)', anim: from('ch_k') });
   lineChart($('ch_t'), P, [{ name: 'Total', color: 'var(--accent)', y: I.map(i => m.R.Wi[i]) }],
