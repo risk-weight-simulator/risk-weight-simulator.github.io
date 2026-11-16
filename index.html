@@ -845,7 +845,7 @@ img { max-width: 100% }
       <option value="5">Entrepreneurs</option><option value="6">Households</option><option value="7">Welfare</option></select></div>
     <div class="tablewrap"><table class="bk" id="cmp" aria-describedby="cmpcap" data-col="2">
       <thead><tr><th>Reform <button type="button" class="q" data-help="best" aria-label="Explain: best schedules" aria-expanded="false">i</button></th><th>Equity (%)</th><th>Credit (%)</th><th title="Change in the bailout probability, percentage points">Bailout prob. (pp)</th><th>Entrepreneurs</th><th>Households</th><th>Welfare</th></tr></thead><tbody></tbody></table></div>
-    <p class="caption">Equity changes as a percentage of required bank equity; credit changes as a percentage of total corporate credit. Bailout probability: change in percentage points from <i>F</i>(<i>z</i>*) = <span class="fz">5</span>%, the local approximation <i>f</i>(<i>z</i>*)·Δ<i>z</i>*. Welfare in EUR 1,000 per loan. Banks earn zero profits under competition. Aggregate welfare weights banks, entrepreneurs and households equally.</p>
+    <p class="caption">Equity changes as a percentage of required bank equity; credit changes as a percentage of total corporate credit. Bailout probability: change in percentage points from <i>F</i>(<i>z</i>*) = <span class="fz">5</span>%. The aggregate shock to loan repayments is normal with mean 1. Welfare in EUR 1,000 per loan. Banks earn zero profits under competition. Aggregate welfare weights banks, entrepreneurs and households equally.</p>
   </section>
   </div>
   <div class="figs one" role="tabpanel" id="panel_credit" aria-labelledby="tab_credit" hidden>
@@ -1212,7 +1212,8 @@ function workerMain() {
     return o;
   }
   function pick(R, C, r) {
-    const o = { E: 100 * R.E / C.E0, L: 100 * R.L / C.L0, z: R.z, V_E: R.V_E, V_H: R.V_H, W: R.W, nf: R.newton_fail || 0, clip: R.mass_clipped || 0, den: R.den_neg || 0 };
+    const Fz = C.P.F_z_star, az = E.norminv(Fz), sz = (1 - C.P.z_star) / (-az);   // aggregate shock normal with mean 1 through (z*, F(z*)), script line 1008
+    const o = { E: 100 * R.E / C.E0, L: 100 * R.L / C.L0, z: R.z, dP: E.normcdf(az + R.z / sz) - Fz, V_E: R.V_E, V_H: R.V_H, W: R.W, nf: R.newton_fail || 0, clip: R.mass_clipped || 0, den: R.den_neg || 0 };
     const S = C.S; let fm = 0, plo = Infinity, phi = 0;
     if (R.fail_mass) R.fail_mass.forEach((v, i) => { if (v) { fm += S.pmf[i]; plo = Math.min(plo, S.p[i]); phi = Math.max(phi, S.p[i]); } });
     o.failMass = fm; o.failLo = plo; o.failHi = phi;
@@ -1461,8 +1462,8 @@ const KPI_ICONS = {
   welfare: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>'
 };
 const ICON_ORDER = ['equity', 'credit', 'bailout', 'welfare'];
-const F_DENS = 1.2; let F_BASE = 0.05;   // f(z*) fixed (script line 1009); F(z*) from the inputs (line 1007)
-const relP = z => Number.isFinite(z) ? `Percent change: ${fmt(100 * F_DENS * z / F_BASE, 2)}% of the ${+(100 * F_BASE).toFixed(1)}% bailout probability` : '';
+let F_BASE = 0.05;   // F(z*) from the inputs (script line 1007); bailout change dP from the normal shock (worker pick)
+const relP = d => Number.isFinite(d) ? `Percent change: ${fmt(100 * d / F_BASE, 2)}% of the ${+(100 * F_BASE).toFixed(1)}% bailout probability` : '';
 const methodText = q => q.method === 'fo' ? 'approximation' : 'full simulation';
 let lastTiles = null;
 function renderMain(m) {
@@ -1472,10 +1473,10 @@ function renderMain(m) {
   const pct = v => (100 * v).toFixed(2) + '%';
   $('restitle').innerHTML = label(q.reform);
   $('ressub').textContent = `Aggregate effects of moving from IRBA (${methodText(q)}).`;
-  const tiles = [['Equity', show(R.E, 2), '% of required bank equity'], ['Corporate credit', show(R.L, 2), '% of corporate credit'], ['Bailout probability', show(100 * F_DENS * R.z, 3), bad ? 'pp' : `pp, from ${pct(F_BASE)} to ${pct(F_BASE + F_DENS * R.z)}`], ['Welfare', show(R.W, 4), 'EUR 1,000 per loan']];
+  const tiles = [['Equity', show(R.E, 2), '% of required bank equity'], ['Corporate credit', show(R.L, 2), '% of corporate credit'], ['Bailout probability', show(100 * R.dP, 3), bad ? 'pp' : `pp, from ${pct(F_BASE)} to ${pct(F_BASE + R.dP)}`], ['Welfare', show(R.W, 4), 'EUR 1,000 per loan']];
   const host = $('tiles'); host.textContent = '';
   const step = lastTiles && (lastTiles.q.reform !== q.reform || lastTiles.q.method !== q.method || lastTiles.q.N !== q.N);   // a new reform, calculation or N: highlight the values that changed
-  tiles.forEach(([k, v, u], j) => { const d = document.createElement('div'); if (j === 2 && !bad) d.title = relP(R.z);
+  tiles.forEach(([k, v, u], j) => { const d = document.createElement('div'); if (j === 2 && !bad) d.title = relP(R.dP);
     const a = document.createElement('div'); a.className = 'k'; a.textContent = k; a.insertAdjacentHTML('afterbegin', KPI_ICONS[ICON_ORDER[j]]); const b = document.createElement('div'); b.className = 'v' + (step && lastTiles.v[j] !== v ? ' flash' : ''); b.textContent = v;
     const c = document.createElement('div'); c.className = 'u'; c.textContent = u; if (j === 3) a.append(qBtn('welfare')); d.append(a, b, c); host.append(d); });
   lastTiles = { q, v: tiles.map(t => t[1]) };
@@ -1495,11 +1496,11 @@ function renderTable() {
   ORDER.forEach(r => {
     const tr = document.createElement('tr'); if (r === shown.reform) tr.className = 'sel'; else if (!rows[r]) tr.className = 'pend';
     tr.tabIndex = 0; tr.addEventListener('click', () => choose(r)); tr.addEventListener('keydown', e => { if (e.key === 'Enter') choose(r); });
-    const x = rows[r], cells = x ? [fmt(x.E, 2), fmt(x.L, 2), fmt(100 * F_DENS * x.z, 3), fmt(x.V_E, 4), fmt(x.V_H, 4), fmt(x.W, 4)] : ['…', '…', '…', '…', '…', '…'];
+    const x = rows[r], cells = x ? [fmt(x.E, 2), fmt(x.L, 2), fmt(100 * x.dP, 3), fmt(x.V_E, 4), fmt(x.V_H, 4), fmt(x.W, 4)] : ['…', '…', '…', '…', '…', '…'];
     const td0 = document.createElement('td'); td0.innerHTML = label(r);
     tr.append(td0);
     if (x && x.unstable) { const td = document.createElement('td'); td.colSpan = 6; td.className = 'unstable'; td.textContent = 'Invalid at these inputs: ' + x.reasons.join('; '); tr.append(td); }
-    else cells.forEach((c, j) => { const td = document.createElement('td'); td.textContent = c; if (j === 2 && x) td.title = relP(x.z); tr.append(td); });
+    else cells.forEach((c, j) => { const td = document.createElement('td'); td.textContent = c; if (j === 2 && x) td.title = relP(x.dP); tr.append(td); });
     tb.append(tr);
   });
   tableFade();
