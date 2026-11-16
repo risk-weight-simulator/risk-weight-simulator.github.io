@@ -656,6 +656,12 @@ button.q::after { content: ""; position: absolute; inset: -6px }   /* tap area l
   box-shadow: 0 4px 16px rgba(0,0,0,.16); padding: 10px 13px; font: 15px/1.45 var(--sans); text-wrap: pretty }
 .pop p { margin: 0 } .pop p + p { margin-top: 6px } .pop b { color: var(--ink); font-weight: 600 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important } }
+/* first visit: only the header and the reform choice; the results unfold once a reform is chosen (links with a reform open directly) */
+body.intro .c-ass, body.intro #status, body.intro main > section.res, body.intro #tabbar, body.intro main > [role=tabpanel] { display: none !important }
+body.intro #reform { color: var(--accent) }
+body.reveal main > section.res, body.reveal #tabbar, body.reveal main > [role=tabpanel] { animation: unfold .4s ease-out }
+@keyframes unfold { from { opacity: 0; transform: translateY(8px) } }
+@media (prefers-reduced-motion: reduce) { body.reveal main > * { animation: none !important } }
 @media (max-width: 767px) {
   .headline > div { padding: 12px 8px 14px }
   .headline .k { font-size: 11px; letter-spacing: 0.03em }
@@ -775,6 +781,7 @@ img { max-width: 100% }
   <div class="ctrlbar">
     <div class="ctl c-ref"><label for="reform">Reform</label>
       <select id="reform">
+        <option value="" disabled hidden>Choose a reform to get started</option>
         <option value="fed">Fed proposal (65% / 100%)</option>
         <option value="sa">Current standardized approach</option>
         <option value="u65">Uniform 65%</option>
@@ -1365,7 +1372,8 @@ function reset() {
 }
 document.querySelectorAll('[data-h]').forEach(b => b.addEventListener('click', () => { state.het = b.dataset.h === '1'; syncHet(); schedule(); }));
 $('reset').addEventListener('click', () => { reset(); try { if (location.search) history.replaceState(null, '', location.pathname); } catch (e) {} setSide(false); $('calsec').hidden = true; document.querySelectorAll('aside details').forEach(d => d.open = false); schedule(); });
-$('reform').addEventListener('change', e => { state.reform = e.target.value; schedule(); });
+function reveal() { const b = document.body; if (!b.classList.contains('intro')) return; b.classList.remove('intro'); b.classList.add('reveal'); setTimeout(() => b.classList.remove('reveal'), 450); stackTabbar(); if (mainMsg) drawCharts(mainMsg); }
+$('reform').addEventListener('change', e => { state.reform = e.target.value; reveal(); schedule(); });
 document.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => {
   state.method = b.dataset.m; document.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); schedule(); }));
 function setN(N) { state.N = N; $('nsteps').value = N; $('nshow').textContent = N; }
@@ -1661,7 +1669,7 @@ function lineChart(host, P, series, o) {
 }
 let rz = null, lastW = 0; new ResizeObserver(es => { const w = Math.round(es[0].contentRect.width); if (w === lastW) return; lastW = w; stackTabbar(); clearTimeout(rz); rz = setTimeout(() => { if (mainMsg) { drawCharts(mainMsg); if (!$('calsec').hidden) drawCal(mainMsg); } }, 150); }).observe(document.querySelector('main'));
 
-reset(); applyURL(); send();
+reset(); applyURL(); if (!new URLSearchParams(location.search).has('reform')) { document.body.classList.add('intro'); $('reform').value = ''; } send();
 })();
 </script>
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "83331139b203419db6cbc0e5b720d35b"}'></script>
