@@ -696,7 +696,7 @@ img { max-width: 100% }
   <h1><span class="logo"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6.4" fill="#234D79"/><path d="M7 6.5V25H25.5" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.6 23.4C9.3 15 13.5 10.4 25 8.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>Risk Weight Simulator</h1>
   <p>How should Basel III risk weights be designed? Explore how different regulatory risk weights affect credit allocation, financial stability, and welfare.</p>
   <p class="attr">Calibrated to German corporate lending · Competitive banking · Relative to current Basel III IRBA risk weights</p>
-  <p class="cite">Jager &amp; Schulz (2026) · <a href="https://drive.google.com/file/d/1gWIlKs8f74dNEKbL3XkxwxFksfOj9e98/view" target="_blank" rel="noopener">Read the paper</a> · <a href="#cite">How to cite</a> · <button type="button" class="linkbtn" id="copylink">Copy link</button></p>
+  <p class="cite">Jager and Schulz (2026) · <a href="https://drive.google.com/file/d/1gWIlKs8f74dNEKbL3XkxwxFksfOj9e98/view" target="_blank" rel="noopener">Read the paper</a> · <a href="#cite">How to cite</a> · <button type="button" class="linkbtn" id="copylink">Copy link</button></p>
 </header>
 
 <div class="layout">
@@ -834,7 +834,7 @@ img { max-width: 100% }
       <option value="2" selected>Equity (%)</option><option value="3">Credit (%)</option><option value="4">Bailout probability (pp)</option>
       <option value="5">Entrepreneurs</option><option value="6">Households</option><option value="7">Welfare</option></select></div>
     <div class="tablewrap"><table class="bk" id="cmp" aria-describedby="cmpcap" data-col="2">
-      <thead><tr><th>Reform</th><th>Equity (%)</th><th>Credit (%)</th><th title="Change in the bailout probability, percentage points">Bailout prob. (pp)</th><th>Entrepreneurs</th><th>Households</th><th>Welfare</th></tr></thead><tbody></tbody></table></div>
+      <thead><tr><th>Reform <button type="button" class="q" data-help="best" aria-label="Explain: best schedules" aria-expanded="false">?</button></th><th>Equity (%)</th><th>Credit (%)</th><th title="Change in the bailout probability, percentage points">Bailout prob. (pp)</th><th>Entrepreneurs</th><th>Households</th><th>Welfare</th></tr></thead><tbody></tbody></table></div>
     <p class="caption">Equity changes as a percentage of required bank equity; credit changes as a percentage of total credit. Bailout probability: change in percentage points from <i>F</i>(<i>z</i>*) = <span class="fz">5</span>%, the local approximation <i>f</i>(<i>z</i>*)·Δ<i>z</i>*. Welfare in EUR 1,000 per loan. Banks earn zero profits under competition. Aggregate welfare weights banks, entrepreneurs and households equally.</p>
   </section>
   </div>
@@ -981,7 +981,7 @@ const DEFAULTS = {
   LGD: 0.45, M: 5, Omega: 0.08,                                         // lines 326-330
   eps_p_k: null,                                                        // null: 0.019 / mean p (line 399)
   eps_k_p: -0.089, zeta_k_omega: [-0.349, -0.349, -0.349, -0.349],     // lines 401, 405
-  p_c: 0.10, S_IG: 0.57,
+  S_IG: 0.57,
   F_z_star: 0.05, z_star: 0.9038044, E_z_z_star: 0.8454247, kappa_T: 0.3, beta_E: 1,
   r: 0.0468, post_liquid: 0.1965, alpha_H: 1
 };
@@ -1056,28 +1056,13 @@ function calibrate(inp, fTab) {
     wSA[i] = e.reduce((s, v, g) => s + v / se * SA_RW[g], 0);
   }
   // optima, lines 1365-1381
-  const wFB = Float64Array.from(b), wSB = F(n);
-  if (epk !== 0 && Math.abs(epk) < 0.02) wSB.fill(NaN);   // p_min^(1/|eps|) leaves double range below |eps| = 0.0153; second best not computed
-  else if (epk > 0) {
-    const g = gradient(b, p), h = cumtrapz(p, g.map((v, i) => v * Math.pow(p[i], 1 / epk)));
-    for (let i = 0; i < n; i++) wSB[i] = b[i] - h[i] / Math.pow(p[i], 1 / epk);
-  } else if (epk === 0) wSB.set(b);
-  else {
-    let j = 0; while (p[j] < P.p_c) j++;
-    let sw = 0, swb = 0;
-    for (let i = j; i < n; i++) { const w = pmf[i] * k[i] * Math.abs(zkw[i]) / (1 - ekp[i] * epk); sw += w; swb += w * b[i]; }
-    const wc = swb / sw; wSB.fill(wc);
-    const q = p.slice(0, j + 1), bl = b.slice(0, j + 1), gq = gradient(bl, q);
-    const qr = Float64Array.from(q).reverse(), yr = Float64Array.from(gq.map((v, i) => v * Math.pow(q[i], 1 / epk))).reverse();
-    const ct = cumtrapz(qr, yr).reverse();
-    for (let i = 0; i <= j; i++) wSB[i] = bl[i] + Math.pow(q[i] / p[j], -1 / epk) * (wc - bl[j]) - Math.pow(q[i], -1 / epk) * ct[i];
-  }
+  const wFB = Float64Array.from(b);
   const S = { p, lp, pmf, k, Omega: P.Omega, z_k_w: zkw, z_k_wp: 0, eps_kp: ekp, eps_pk: epkv, del, r: P.r, z_star: P.z_star,
               rec, post_liquid: P.post_liquid, mu, chi_H, xi_E, xi_H, alpha };
   const one = F(n).fill(1);
   let denom_min = Infinity; for (let i = 0; i < n; i++) denom_min = Math.min(denom_min, 1 - ekp[i] * epk);   // credit-response divisor 1 - eps_kp eps_pk
   return { P, S, denom_min, eps_p_k: epk, pmed, share, sigma_log_k, meanp, pdfk, kg, kmean, ksd,
-           schedules: { irba: omega, fed: wFed, sa: wSA, sb: wSB, fb: wFB, u65: one.map(() => 0.65), u100: one,
+           schedules: { irba: omega, fed: wFed, sa: wSA, fb: wFB, u65: one.map(() => 0.65), u100: one,
              // best simple schedules (functional forms as in script lines 1672-1675), maximizing welfare with the calibrated b at the reference calibration
              flat: one.map(() => SIMPLE.flat), lin: p.map(v => SIMPLE.lin[0] + SIMPLE.lin[1] * v), iso: p.map(v => SIMPLE.iso[0] * Math.pow(v, SIMPLE.iso[1])), ig2: share.map(s => s * SIMPLE.ig2[0] + (1 - s) * SIMPLE.ig2[1]) },
            E0: P.Omega * sumw(pmf, k.map((v, i) => v * omega[i])), L0: sumw(pmf, k) };
@@ -1260,7 +1245,7 @@ function workerMain() {
 const zq = [0.01, 0.25, 0.50, 0.75, 0.99].map(normInv), qlp = [-9.210, -6.725, -5.547, -4.382, -1.609];
 const SIG0 = zq.reduce((s, z, i) => s + z * qlp[i], 0) / zq.reduce((s, z) => s + z * z, 0);
 const DEF = { LGD: 0.45, M: 5, mu_log_p: -5.519, sigma_log_p: SIG0, mean_k: 9728, mu_log_k_eur: 14.767, rho: -0.3,
-              eps_p_k: null, p_c: 0.10, Omega: 0.08, alpha_H: 1, S_IG: 0.57, kappa_T: 0.3, F_z_star: 0.05, r: 0.0468, post_liquid: 0.1965, zu: -0.349, eku: -0.089, z0: T5[0], z1: T5[1], z2: T5[2], z3: T5[3], e0: -0.089, e1: -0.089, e2: -0.089, e3: -0.089 };
+              eps_p_k: null, Omega: 0.08, alpha_H: 1, S_IG: 0.57, kappa_T: 0.3, F_z_star: 0.05, r: 0.0468, post_liquid: 0.1965, zu: -0.349, eku: -0.089, z0: T5[0], z1: T5[1], z2: T5[2], z3: T5[3], e0: -0.089, e1: -0.089, e2: -0.089, e3: -0.089 };
 const state = { inp: {}, epsAuto: true, het: false, reform: 'fed', method: 'lr', N: 10 };
 let baseKey = null;
 
@@ -1292,6 +1277,7 @@ document.querySelectorAll('.ctl[data-key]').forEach(el => {
 // ---------- "?" explanations ----------
 const HELP = {
   calc: '<p><b>Approximation.</b> Linear approximation around the current IRBA schedule. Welfare scales one‑for‑one with the size of the reform.</p><p><b>Full simulation.</b> The reform is applied in <i>N</i> small steps, and at each step every loan adjusts its credit and default risk. Results are extrapolated to infinitely many steps.</p>',
+  best: 'Best schedules keep the parameters that maximize welfare at the baseline calibration, also under changed assumptions.',
   welfare: 'Change in aggregate welfare, in EUR 1,000 per loan. Aggregate welfare weights banks, entrepreneurs and households equally.',
   mu_log_p: 'Average log probability of default across loans. Baseline −5.52, a median PD of about 0.4%, from the German credit registry.',
   sigma_log_p: 'Dispersion of default risk across loans. Baseline 1.64, fitted to the 1st to 99th percentiles of log PD in the German credit registry.',
@@ -1419,7 +1405,7 @@ function normInv(p) { // Acklam start for the control default; the engine refine
 let timer = null, reqId = 0, mainMsg = null, rows = {}, shown = { reform: 'fed', method: 'lr', N: 10 };
 function engineInputs() {
   const I = state.inp;
-  const o = { LGD: I.LGD, M: I.M, Omega: I.Omega, alpha_H: I.alpha_H, S_IG: I.S_IG, kappa_T: I.kappa_T, F_z_star: I.F_z_star, r: I.r, post_liquid: I.post_liquid, mu_log_p: I.mu_log_p, mean_k: I.mean_k, mu_log_k: I.mu_log_k_eur - LN1000, rho: I.rho, p_c: I.p_c,
+  const o = { LGD: I.LGD, M: I.M, Omega: I.Omega, alpha_H: I.alpha_H, S_IG: I.S_IG, kappa_T: I.kappa_T, F_z_star: I.F_z_star, r: I.r, post_liquid: I.post_liquid, mu_log_p: I.mu_log_p, mean_k: I.mean_k, mu_log_k: I.mu_log_k_eur - LN1000, rho: I.rho,
     zeta_k_omega: state.het ? [I.z0, I.z1, I.z2, I.z3] : [I.zu, I.zu, I.zu, I.zu],
     eps_k_p: state.het ? [I.e0, I.e1, I.e2, I.e3] : I.eku, eps_p_k: state.epsAuto ? null : I.eps_p_k };
   if (Math.abs(I.sigma_log_p - SIG0) > 5e-4) o.sigma_log_p = I.sigma_log_p;   // else the engine's exact quantile fit
