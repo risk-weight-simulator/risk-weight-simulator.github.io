@@ -702,7 +702,7 @@ img { max-width: 100% }
 <div class="strip" id="strip" aria-hidden="true"><span class="logo"></span><span>Risk Weight Simulator</span></div>
 <header>
   <h1><span class="logo"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6.4" fill="#234D79"/><path d="M7 6.5V25H25.5" fill="none" stroke="#fff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.6 23.4C9.3 15 13.5 10.4 25 8.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/></svg></span>Risk Weight Simulator</h1>
-  <p>How should Basel risk weights be designed? Explore how different regulatory reforms affect credit allocation, financial stability, and welfare.</p>
+  <p>How should Basel risk weights be designed? Explore how different regulatory reforms affect the allocation of corporate credit, financial stability, and welfare.</p>
   <p class="attr">Calibrated to German corporate lending · Competitive banking · Relative to current Basel III IRBA risk weights</p>
   <p class="cite">Jager and Schulz (2026) · <a href="https://drive.google.com/file/d/1gWIlKs8f74dNEKbL3XkxwxFksfOj9e98/view" target="_blank" rel="noopener">Read the paper</a> · <a href="#cite">How to cite</a> · <button type="button" class="linkbtn" id="copylink">Copy link</button></p>
 </header>
@@ -719,7 +719,7 @@ img { max-width: 100% }
         <div class="ctl" data-key="sigma_log_p" data-min="1.2" data-max="2.5" data-step="0.001"><label>SD of log PD <span class="sym">σ<sub>p</sub></span></label></div>
         <div class="implied" id="pdstats"></div>
       </div>
-      <div class="grp"><h3>Credit</h3>
+      <div class="grp"><h3>Corporate credit</h3>
         <div class="ctl" data-key="mean_k" data-min="5000" data-max="20000" data-step="1"><label>Mean credit, EUR 1,000</label></div>
         <div class="ctl" data-key="mu_log_k_eur" data-min="13" data-max="16" data-step="0.001"><label>Mean of log credit, log EUR</label></div>
         <div class="ctl" data-key="rho" data-min="-0.8" data-max="0.9" data-step="0.01"><label>Corr. of log PD and log credit <span class="sym">ρ</span></label></div>
@@ -752,7 +752,7 @@ img { max-width: 100% }
         <div id="het" hidden>
           <table class="het"><thead><tr><th>Rating group</th><th><span class="sym">ζ<sup>k,ω</sup></span></th><th><span class="sym">ε<sup>k,p</sup></span></th></tr></thead>
             <tbody id="hetbody"></tbody></table>
-          <p class="hint" style="margin-top:6px">Defaults: <i>ζ<sup>k,ω</sup></i> with the Table 5 shape scaled to the IV level, <i>ε<sup>k,p</sup></i> = −0.089 in every group. Groups are blended smoothly at PD 0.02%, 0.14% and 2.98%.</p>
+          <p class="hint" style="margin-top:6px">Defaults: <i>ζ<sup>k,ω</sup></i> with the Table 5 shape scaled to the IV level, <i>ε<sup>k,p</sup></i> = −0.042 for BBB+ to BB−, the only significant Table 5 estimate, and 0 in the other groups. Groups are blended smoothly at PD 0.02%, 0.14% and 2.98%.</p>
         </div>
       </div>
       <div class="grp"><h3>Risk response</h3>
@@ -764,10 +764,10 @@ img { max-width: 100% }
   <details id="sec_wel">
     <summary>Welfare assumptions</summary>
     <div class="sec">
-      <div class="ctl" data-key="kappa_T" data-min="0.1" data-max="0.6" data-step="0.05"><label>Cost of public funds <span class="sym">κ<sub>T</sub></span></label></div>
+      <div class="ctl" data-key="kappa_T" data-min="0.1" data-max="0.6" data-step="0.05"><label>Deadweight cost of bailouts <span class="sym">κ<sub>T</sub></span></label></div>
       <div class="ctl" data-key="F_z_star" data-min="0.04" data-max="0.12" data-step="0.005"><label>Baseline bailout probability <span class="sym">F(z*)</span></label></div>
       <div class="ctl" data-key="r" data-min="0" data-max="0.09" data-step="0.0001"><label>Loan rate <span class="sym">r</span></label></div>
-      <div class="ctl" data-key="post_liquid" data-min="0.15" data-max="0.30" data-step="0.0005"><label>Depreciation rate <span class="sym">ι</span></label></div>
+      <div class="ctl" data-key="post_liquid" data-min="0.15" data-max="0.30" data-step="0.0005"><label>Fire-sale loss <span class="sym">ι</span></label></div>
     </div>
   </details>
 
@@ -785,6 +785,7 @@ img { max-width: 100% }
         <option value="fed">Fed proposal (65% / 100%)</option>
         <option value="sa">Current standardized approach</option>
         <option value="u65">Uniform 65%</option>
+        <option value="u95">Uniform 95%</option>
         <option value="u100">Uniform 100%</option>
         <option value="flat">Best flat (82%)</option>
         <option value="ig2">Best two ratings (62% / 117%)</option>
@@ -844,11 +845,11 @@ img { max-width: 100% }
       <option value="5">Entrepreneurs</option><option value="6">Households</option><option value="7">Welfare</option></select></div>
     <div class="tablewrap"><table class="bk" id="cmp" aria-describedby="cmpcap" data-col="2">
       <thead><tr><th>Reform <button type="button" class="q" data-help="best" aria-label="Explain: best schedules" aria-expanded="false">i</button></th><th>Equity (%)</th><th>Credit (%)</th><th title="Change in the bailout probability, percentage points">Bailout prob. (pp)</th><th>Entrepreneurs</th><th>Households</th><th>Welfare</th></tr></thead><tbody></tbody></table></div>
-    <p class="caption">Equity changes as a percentage of required bank equity; credit changes as a percentage of total credit. Bailout probability: change in percentage points from <i>F</i>(<i>z</i>*) = <span class="fz">5</span>%, the local approximation <i>f</i>(<i>z</i>*)·Δ<i>z</i>*. Welfare in EUR 1,000 per loan. Banks earn zero profits under competition. Aggregate welfare weights banks, entrepreneurs and households equally.</p>
+    <p class="caption">Equity changes as a percentage of required bank equity; credit changes as a percentage of total corporate credit. Bailout probability: change in percentage points from <i>F</i>(<i>z</i>*) = <span class="fz">5</span>%, the local approximation <i>f</i>(<i>z</i>*)·Δ<i>z</i>*. Welfare in EUR 1,000 per loan. Banks earn zero profits under competition. Aggregate welfare weights banks, entrepreneurs and households equally.</p>
   </section>
   </div>
   <div class="figs one" role="tabpanel" id="panel_credit" aria-labelledby="tab_credit" hidden>
-    <figure class="res"><div class="chart" id="ch_k"></div><figcaption class="caption"><b>Figure 2.</b> Change in credit by the loan's initial probability of default, full simulation and approximation.</figcaption></figure>
+    <figure class="res"><div class="chart" id="ch_k"></div><figcaption class="caption"><b>Figure 2.</b> Change in corporate credit by the loan's initial probability of default, full simulation and approximation.</figcaption></figure>
   </div>
   <div class="figs" role="tabpanel" id="panel_welfare" aria-labelledby="tab_welfare" hidden>
     <figure class="res"><div class="chart" id="ch_t"></div><figcaption class="caption"><b>Figure 3.</b> Total welfare change per loan by initial probability of default.</figcaption></figure>
@@ -1071,7 +1072,7 @@ function calibrate(inp, fTab) {
   const one = F(n).fill(1);
   let denom_min = Infinity; for (let i = 0; i < n; i++) denom_min = Math.min(denom_min, 1 - ekp[i] * epk);   // credit-response divisor 1 - eps_kp eps_pk
   return { P, S, denom_min, eps_p_k: epk, pmed, share, sigma_log_k, meanp, pdfk, kg, kmean, ksd,
-           schedules: { irba: omega, fed: wFed, sa: wSA, fb: wFB, u65: one.map(() => 0.65), u100: one,
+           schedules: { irba: omega, fed: wFed, sa: wSA, fb: wFB, u65: one.map(() => 0.65), u95: one.map(() => 0.95), u100: one,
              // best simple schedules (functional forms as in script lines 1672-1675), maximizing welfare with the calibrated b at the reference calibration
              flat: one.map(() => SIMPLE.flat), lin: p.map(v => SIMPLE.lin[0] + SIMPLE.lin[1] * v), iso: p.map(v => SIMPLE.iso[0] * Math.pow(v, SIMPLE.iso[1])), ig2: share.map(s => s * SIMPLE.ig2[0] + (1 - s) * SIMPLE.ig2[1]) },
            E0: P.Omega * sumw(pmf, k.map((v, i) => v * omega[i])), L0: sumw(pmf, k) };
@@ -1177,10 +1178,10 @@ if (typeof module !== 'undefined' && module.exports) module.exports = api; else 
 <script>
 (function () {
 'use strict';
-const NAMES = { fed: 'Fed proposal', sa: 'Standardized approach', u65: 'Uniform 65%', u100: 'Uniform 100%', flat: 'Best flat (82%)', ig2: 'Best two ratings (62% / 117%)', lin: 'Best linear', iso: 'Best isoelastic', fb: 'Optimal schedule' };
+const NAMES = { fed: 'Fed proposal', sa: 'Standardized approach', u65: 'Uniform 65%', u95: 'Uniform 95%', u100: 'Uniform 100%', flat: 'Best flat (82%)', ig2: 'Best two ratings (62% / 117%)', lin: 'Best linear', iso: 'Best isoelastic', fb: 'Optimal schedule' };
 const LABEL = { lin: 'Best linear, <span class="nwf"><i>ω</i> = 0.69 + 9.58 <i>p</i></span>', iso: 'Best isoelastic, <span class="nwf"><i>ω</i> = 1.92 <i>p</i><sup>0.15</sup></span>', ig2: 'Best two ratings <span class="nwf">(62% / 117%)</span>' };   // fixed markup, set as HTML
 const label = r => LABEL[r] || NAMES[r];
-const ORDER = ['fed', 'sa', 'u65', 'u100', 'flat', 'ig2', 'lin', 'iso', 'fb'];
+const ORDER = ['fed', 'sa', 'u65', 'u95', 'u100', 'flat', 'ig2', 'lin', 'iso', 'fb'];
 const GROUPS = ['AAA to AA−', 'A+ to A−', 'BBB+ to BB−', 'Below BB−'];
 const T5 = [-0.878, -1.381, -0.682, -0.231].map(v => v * (-0.349 / -0.709));
 const LN1000 = Math.log(1000), P_SHOW = 0.10;
@@ -1239,7 +1240,7 @@ function workerMain() {
       sdp: Math.sqrt(sd2 - C.meanp * C.meanp), sigma_log_k: C.sigma_log_k, kmean: C.kmean, ksd: C.ksd, kg: C.kg, pdfk: C.pdfk, k: S.k, share: C.share, xiE: S.xi_E, xiH: S.xi_H, mu: S.mu, Fz: C.P.F_z_star, k_hat_fo: Rfo.k_hat,
       R: Object.assign(pick(R, C, m.reform), { k_hat: R.k_hat, Wi: R.Wi, V_Ei: R.V_Ei, V_Hi: R.V_Hi }), ms: performance.now() - t0 });
     const rows = {}; rows[m.reform] = pick(R, C, m.reform);
-    const rest = ['fed', 'sa', 'u65', 'u100', 'flat', 'ig2', 'lin', 'iso', 'fb'].filter(r => r !== m.reform);
+    const rest = ['fed', 'sa', 'u65', 'u95', 'u100', 'flat', 'ig2', 'lin', 'iso', 'fb'].filter(r => r !== m.reform);
     (function next() {
       if (m.id !== latest) return;
       if (!rest.length) { self.postMessage({ type: 'table', id: m.id, req: { reform: m.reform, method: m.method, N: m.N }, rows, done: true, ms: performance.now() - t0 }); return; }
@@ -1254,7 +1255,7 @@ function workerMain() {
 const zq = [0.01, 0.25, 0.50, 0.75, 0.99].map(normInv), qlp = [-9.210, -6.725, -5.547, -4.382, -1.609];
 const SIG0 = zq.reduce((s, z, i) => s + z * qlp[i], 0) / zq.reduce((s, z) => s + z * z, 0);
 const DEF = { LGD: 0.45, M: 5, mu_log_p: -5.519, sigma_log_p: SIG0, mean_k: 9728, mu_log_k_eur: 14.767, rho: -0.3,
-              eps_p_k: null, Omega: 0.08, alpha_H: 1, S_IG: 0.57, kappa_T: 0.3, F_z_star: 0.05, r: 0.0468, post_liquid: 0.1965, zu: -0.349, eku: -0.089, z0: T5[0], z1: T5[1], z2: T5[2], z3: T5[3], e0: -0.089, e1: -0.089, e2: -0.089, e3: -0.089 };
+              eps_p_k: null, Omega: 0.08, alpha_H: 1, S_IG: 0.57, kappa_T: 0.3, F_z_star: 0.05, r: 0.0468, post_liquid: 0.1965, zu: -0.349, eku: -0.089, z0: T5[0], z1: T5[1], z2: T5[2], z3: T5[3], e0: 0, e1: 0, e2: -0.042, e3: 0 };
 const state = { inp: {}, epsAuto: true, het: false, reform: 'fed', method: 'lr', N: 10 };
 let baseKey = null;
 
@@ -1297,12 +1298,12 @@ const HELP = {
   M: 'Loan maturity in the IRBA risk‑weight formula. Baseline 5 years.',
   Omega: 'Minimum ratio of bank equity to risk‑weighted assets. Baseline 8%, the current minimum.',
   S_IG: 'Share of investment‑grade borrowers, who receive 65% under the Fed proposal. Baseline 57% (Vanhaverbeke, Balsmeier and Doherr, 2022).',
-  zu: 'How strongly banks cut credit when a loan’s risk weight rises. For example, −0.35 means a 10 percentage point higher risk weight lowers credit supply by 3.5%. Baseline −0.349, estimated from the 2020 SME Supporting Factor reform in Germany. Estimates for France range from −0.23 to −0.45 (Fraisse, Lé and Thesmar, 2020).',
+  zu: 'How strongly banks cut credit when a loan’s risk weight rises. For example, −0.35 means a 10 percentage point higher risk weight lowers the supply of corporate credit by 3.5%. Baseline −0.349, estimated from the 2020 SME Supporting Factor reform in Germany. Estimates for France range from −0.23 to −0.45 (Fraisse, Lé and Thesmar, 2020).',
   eku: 'Percent change in credit supply when the borrower’s PD rises by 1%, at a given risk weight. Baseline −0.089, estimated from differences in PD estimates across banks lending to the same firm.',
   eps_p_k: 'Percent change in the borrower’s PD when credit rises by 1%. Baseline 1.36, from the estimate that 10% more credit raises the PD by 0.19 percentage points (German bank levy, 2011), divided by the mean PD.',
   het: 'Separate elasticities for the four rating groups AAA to AA−, A+ to A−, BBB+ to BB−, and below BB−.',
-  kappa_T: 'Deadweight cost of each euro of bailout paid by taxpayers. Baseline 0.30.',
-  F_z_star: 'Probability that a macroeconomic shock triggers a bailout. Baseline 5%, from quarterly DAX returns 2005–2022.',
+  kappa_T: 'Social cost of each euro of bailout beyond the euro itself. With 0.30, a €10 billion bailout costs society €13 billion. €10 billion pass from taxpayers to the bank’s depositors, and €3 billion are lost. The loss comes from the taxes that raise the money, which discourage work and investment, and from the cost of resolving the failed bank. Baseline 0.30.',
+  F_z_star: 'Probability that a macroeconomic shock triggers a bailout. Baseline 5%.',
   r: 'Loan interest rate, which sets the bank’s value in a bailout. Baseline 4.68% (Corbae and D’Erasmo, 2021).',
   post_liquid: 'Share of loan value lost when a failed bank’s loan portfolio is liquidated. Baseline 19.65% (Corbae and D’Erasmo, 2021).'
 };
@@ -1471,7 +1472,7 @@ function renderMain(m) {
   const pct = v => (100 * v).toFixed(2) + '%';
   $('restitle').innerHTML = label(q.reform);
   $('ressub').textContent = `Aggregate effects of moving from IRBA (${methodText(q)}).`;
-  const tiles = [['Equity', show(R.E, 2), '% of required bank equity'], ['Credit', show(R.L, 2), '% of credit'], ['Bailout probability', show(100 * F_DENS * R.z, 3), bad ? 'pp' : `pp, from ${pct(F_BASE)} to ${pct(F_BASE + F_DENS * R.z)}`], ['Welfare', show(R.W, 4), 'EUR 1,000 per loan']];
+  const tiles = [['Equity', show(R.E, 2), '% of required bank equity'], ['Corporate credit', show(R.L, 2), '% of corporate credit'], ['Bailout probability', show(100 * F_DENS * R.z, 3), bad ? 'pp' : `pp, from ${pct(F_BASE)} to ${pct(F_BASE + F_DENS * R.z)}`], ['Welfare', show(R.W, 4), 'EUR 1,000 per loan']];
   const host = $('tiles'); host.textContent = '';
   const step = lastTiles && (lastTiles.q.reform !== q.reform || lastTiles.q.method !== q.method || lastTiles.q.N !== q.N);   // a new reform, calculation or N: highlight the values that changed
   tiles.forEach(([k, v, u], j) => { const d = document.createElement('div'); if (j === 2 && !bad) d.title = relP(R.z);
@@ -1532,7 +1533,7 @@ function drawCharts(m) {
   if (m.R.unstable) { ['ch_k', 'ch_t', 'ch_v'].forEach(id => figMsg(id, 'Figure omitted: the reform is invalid at these inputs.')); return; }
   const kser = [{ name: m.req.method === 'fo' ? NAMES[sel] + ', approximation' : NAMES[sel] + ', full simulation', color: 'var(--accent)', y: I.map(i => 100 * m.R.k_hat[i] / m.k[i]) }];
   if (m.req.method !== 'fo') kser.unshift({ name: 'Approximation', color: 'var(--base)', dash: '6 3', y: I.map(i => 100 * m.k_hat_fo[i] / m.k[i]) });
-  lineChart($('ch_k'), P, kser, { tfmt: v => v.toFixed(2) + '%', zero: true, x: PX, ytitle: 'Change in credit (%)', anim: from('ch_k') });
+  lineChart($('ch_k'), P, kser, { tfmt: v => v.toFixed(2) + '%', zero: true, x: PX, ytitle: 'Change in corporate credit (%)', anim: from('ch_k') });
   lineChart($('ch_t'), P, [{ name: 'Total', color: 'var(--accent)', y: I.map(i => m.R.Wi[i]) }],
     { tfmt: v => v.toFixed(4), zero: true, single: true, x: PX, ytitle: 'Welfare (EUR 1,000)', anim: from('ch_t') });
   lineChart($('ch_v'), P, [{ name: 'Entrepreneurs', color: 'var(--s1)', y: I.map(i => m.R.V_Ei[i]), dash: '6 3' }, { name: 'Households', color: 'var(--s2)', y: I.map(i => m.R.V_Hi[i]), dash: '1.5 2.5' }],
