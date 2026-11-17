@@ -547,9 +547,7 @@ main > * { min-width: 0 }
 .status { font: 12px var(--sans); color: var(--ink-3); font-variant-numeric: tabular-nums }
 section h2 { font-size: 25px; font-weight: 500; margin: 0 0 4px; color: var(--accent) }
 .lede { color: var(--ink-2); margin: 0 0 12px; font-size: 18px }
-.headline { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); overflow: hidden }
-@media (max-width: 1023px) { .headline { grid-template-columns: repeat(3, minmax(0, 1fr)) } }
-@media (min-width: 1024px) { body.side-open .headline { grid-template-columns: repeat(3, minmax(0, 1fr)) } }
+.headline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); overflow: hidden }
 @media (max-width: 640px) { .headline { grid-template-columns: repeat(2, minmax(0, 1fr)) } }
 .headline > div { padding: 14px 14px 16px }
 .headline > div { box-shadow: -1px 0 0 var(--hair), 0 -1px 0 var(--hair) }   /* grid lines; the container clips them at its outer edges */
@@ -722,7 +720,6 @@ img { max-width: 100% }
         <div class="ctl" data-key="mean_k" data-min="5000" data-max="20000" data-step="1"><label>Mean credit, EUR 1,000</label></div>
         <div class="ctl" data-key="mu_log_k_eur" data-min="13" data-max="16" data-step="0.001"><label>Mean of log credit, log EUR</label></div>
         <div class="ctl" data-key="rho" data-min="-0.8" data-max="0.9" data-step="0.01"><label>Corr. of log PD and log credit <span class="sym">ρ</span></label></div>
-        <div class="ctl" data-key="L_tot" data-min="200" data-max="2000" data-step="1"><label>Total corporate credit, € billion</label></div>
         <div class="implied" id="kstats"></div>
       </div></div>
   </details>
@@ -787,8 +784,8 @@ img { max-width: 100% }
         <option value="u65">Uniform 65%</option>
         <option value="u95">Uniform 95%</option>
         <option value="u100">Uniform 100%</option>
-        <option value="flat">Best flat (82%)</option>
-        <option value="ig2">Best two ratings (62% / 117%)</option>
+        <option value="flat">Best flat (80%)</option>
+        <option value="ig2">Best two ratings (64% / 109%)</option>
         <option value="lin">Best linear</option>
         <option value="iso">Best isoelastic</option>
         <option value="fb">Optimal schedule</option>
@@ -842,17 +839,17 @@ img { max-width: 100% }
     <p class="caption" id="cmpcap" style="margin:0 0 12px"><b>Table 1.</b> Aggregate effects of all reforms under the same assumptions and calculation. Select a row to show that reform.</p>
     <div class="cmpshow"><label for="cmpcol">Show</label><select id="cmpcol">
       <option value="2" selected>Equity (%)</option><option value="3">Credit (%)</option><option value="4">Bailout probability (pp)</option>
-      <option value="5">Entrepreneurs (€m)</option><option value="6">Bailout cost (€m)</option></select></div>
+      <option value="5">Cost-benefit ratio</option></select></div>
     <div class="tablewrap"><table class="bk" id="cmp" aria-describedby="cmpcap" data-col="2">
-      <thead><tr><th>Reform <button type="button" class="q" data-help="best" aria-label="Explain: best schedules" aria-expanded="false">i</button></th><th>Equity (%)</th><th>Credit (%)</th><th title="Change in the bailout probability, percentage points">Bailout prob. (pp)</th><th>Entrepreneurs (€m)</th><th>Bailout cost (€m)</th></tr></thead><tbody></tbody></table></div>
-    <p class="caption">Equity changes as a percentage of required bank equity; credit changes as a percentage of total corporate credit. Bailout probability: change in percentage points from <i>F</i>(<i>z</i>*) = <span class="fz">5</span>%. The aggregate shock to loan repayments is normal with mean 1. Entrepreneurs’ net income and taxpayers’ bailout cost in € million per year, for total corporate credit of €<span class="ltot">1,078</span> billion. Banks earn zero profits under competition.</p>
+      <thead><tr><th>Reform <button type="button" class="q" data-help="best" aria-label="Explain: best schedules" aria-expanded="false">i</button></th><th>Equity (%)</th><th>Credit (%)</th><th title="Change in the bailout probability, percentage points">Bailout prob. (pp)</th><th>Cost-benefit ratio</th></tr></thead><tbody></tbody></table></div>
+    <p class="caption">Equity changes as a percentage of required bank equity; credit changes as a percentage of total corporate credit. Bailout probability: change in percentage points from <i>F</i>(<i>z</i>*) = <span class="fz">5</span>%. The aggregate shock to loan repayments follows a Student-t distribution with mean 1. Cost-benefit ratio: firm net income lost as a percentage of bailout cost saved; for Uniform 65%, firm net income gained per added bailout cost. Banks earn zero profits under competition.</p>
   </section>
   </div>
   <div class="figs one" role="tabpanel" id="panel_credit" aria-labelledby="tab_credit" hidden>
     <figure class="res"><div class="chart" id="ch_k"></div><figcaption class="caption"><b>Figure 2.</b> Change in corporate credit by the loan's initial probability of default, full simulation and approximation.</figcaption></figure>
   </div>
   <div class="figs one" role="tabpanel" id="panel_welfare" aria-labelledby="tab_welfare" hidden>
-    <figure class="res"><div class="chart" id="ch_v"></div><figcaption class="caption"><b>Figure 3.</b> Contribution of one loan to entrepreneurs’ net income and to taxpayers’ bailout cost, by the loan’s initial probability of default, in EUR 1,000 per loan. Summed over all loans, the curves give the totals in the headline.</figcaption></figure>
+    <figure class="res"><div class="chart" id="ch_v"></div><figcaption class="caption"><b>Figure 3.</b> Gains and losses of one loan by its initial probability of default, in EUR 1,000 per loan. Firm net income is the sum of the credit-supply effect and the mechanical cost passed through, which are nearly equal for every loan.<span id="vtot"></span></figcaption></figure>
   </div>
 
   <details class="notes">
@@ -924,6 +921,45 @@ function norminv(p) {           // Acklam start, two Newton steps on normcdf
   for (let i = 0; i < 2; i++) x -= (normcdf(x) - p) / phi(x);
   return x;
 }
+// Student-t aggregate shock, change 118 (shock_t.m): v = 1 + sig*T, T ~ t(nu); nu = Infinity is the normal
+const LANCZOS = [0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7];
+function lgamma(x) {
+  if (x < 0.5) return Math.log(Math.PI / Math.abs(Math.sin(Math.PI * x))) - lgamma(1 - x);
+  x -= 1; let a = LANCZOS[0]; const t = x + 7.5;
+  for (let i = 1; i < 9; i++) a += LANCZOS[i] / (x + i);
+  return 0.5 * Math.log(2 * Math.PI) + (x + 0.5) * Math.log(t) - t + Math.log(a);
+}
+function betacf(a, b, x) {      // continued fraction for the incomplete beta (modified Lentz)
+  const TINY = 1e-300; let c = 1, d = 1 - (a + b) * x / (a + 1); if (Math.abs(d) < TINY) d = TINY; d = 1 / d; let h = d;
+  for (let m = 1; m <= 500; m++) {
+    const m2 = 2 * m; let aa = m * (b - m) * x / ((a + m2 - 1) * (a + m2));
+    d = 1 + aa * d; if (Math.abs(d) < TINY) d = TINY; c = 1 + aa / c; if (Math.abs(c) < TINY) c = TINY; d = 1 / d; h *= d * c;
+    aa = -(a + m) * (a + b + m) * x / ((a + m2) * (a + m2 + 1));
+    d = 1 + aa * d; if (Math.abs(d) < TINY) d = TINY; c = 1 + aa / c; if (Math.abs(c) < TINY) c = TINY; d = 1 / d; const del = d * c; h *= del;
+    if (Math.abs(del - 1) < 1e-16) break;
+  }
+  return h;
+}
+function ibeta(a, b, x) {
+  if (x <= 0) return 0; if (x >= 1) return 1;
+  const bt = Math.exp(lgamma(a + b) - lgamma(a) - lgamma(b) + a * Math.log(x) + b * Math.log(1 - x));
+  return x < (a + 1) / (a + b + 2) ? bt * betacf(a, b, x) / a : 1 - bt * betacf(b, a, 1 - x) / b;
+}
+const tpdf = (t, nu) => Math.exp(lgamma((nu + 1) / 2) - lgamma(nu / 2) - 0.5 * Math.log(nu * Math.PI) - (nu + 1) / 2 * Math.log(1 + t * t / nu));
+function tcdf(t, nu) { const ib = 0.5 * ibeta(nu / 2, 0.5, nu / (nu + t * t)); return t < 0 ? ib : 1 - ib; }
+function tinv(q, nu) { let lo = -1e4, hi = 1e4; for (let i = 0; i < 200; i++) { const m = 0.5 * (lo + hi); if (tcdf(m, nu) < q) lo = m; else hi = m; } return 0.5 * (lo + hi); }
+function shock(z, nu, sig) {    // F = P(v <= z), Ec = E(v | v <= z)
+  const t = (z - 1) / sig;
+  if (!isFinite(nu)) { const Fz = normcdf(t); return { F: Fz, Ec: 1 - sig * phi(t) / Fz }; }
+  const Fz = tcdf(t, nu); return { F: Fz, Ec: 1 - sig * (nu + t * t) / (nu - 1) * tpdf(t, nu) / Fz };
+}
+function fitShock(zs, Fs, Es) { // nu, sig with F(z*) = Fs and E(v | v <= z*) = Es; normal (nu Infinity) if no t matches
+  const cm = nu => { const t = tinv(Fs, nu); return shock(zs, nu, (zs - 1) / t).Ec; };
+  if (!(cm(1e4) > Es)) return { nu: Infinity, sig: (1 - zs) / (-norminv(Fs)) };
+  let lo = Math.log(1.05), hi = Math.log(1e4);
+  for (let i = 0; i < 100; i++) { const m = 0.5 * (lo + hi); if (cm(Math.exp(m)) < Es) lo = m; else hi = m; }
+  const nu = Math.exp(0.5 * (lo + hi)); return { nu, sig: (zs - 1) / tinv(Fs, nu) };
+}
 const F = n => new Float64Array(n);
 function logspace(a, b, n) { const o = F(n); for (let i = 0; i < n; i++) o[i] = Math.pow(10, i === n - 1 ? b : a + i * ((b - a) / (n - 1))); return o; }
 function trapz(x, y) { let s = 0; for (let i = 1; i < x.length; i++) s += (x[i] - x[i-1]) * (y[i] + y[i-1]) / 2; return s; }
@@ -980,7 +1016,7 @@ function omegaIRBA(p, LGD, M) {
 }
 
 // ---------- defaults (script lines in comments) ----------
-const N_GRID = 10000, P_MIN = 0.00002, P_MAX = 0.5;
+const N_GRID = 10000, P_MIN = 0.00002, P_MAX = 0.20;   // change 117: registry 99th percentile of PD
 const P_GRID_N = inp => (inp && inp.n_grid) || N_GRID;   // grid size; only changed for numerical checks
 const zq = [0.01, 0.25, 0.50, 0.75, 0.99].map(norminv), qlp = [-9.210, -6.725, -5.547, -4.382, -1.609];
 const DEFAULTS = {
@@ -994,7 +1030,7 @@ const DEFAULTS = {
   F_z_star: 0.05, z_star: 0.9038044, E_z_z_star: 0.8454247, kappa_T: 0.3, beta_E: 1,
   r: 0.0468, post_liquid: 0.1965, alpha_H: 1
 };
-const SIMPLE = { flat: 0.8172, lin: [0.6926, 9.5817], iso: [1.9181, 0.1517], ig2: [0.6219, 1.1665] };   // best simple schedules under the reference calibration (calibrated b), MATLAB search at 50 steps, 2026-11-14
+const SIMPLE = { flat: 0.7992, lin: [0.6936, 9.4952], iso: [1.6190, 0.1226], ig2: [0.6365, 1.0916] };   // best simple schedules under the reference calibration (calibrated b), search_best_simple_GER.m at 50 steps, change 117 (welfare unchanged by 119), 2026-11-17
 const TABLE5_ZETA = [-0.878, -1.381, -0.682, -0.231].map(v => v * (-0.349 / -0.709));   // S_heterog, line 1104
 const P_HET = [0.0002, 0.0014, 0.0298], STEEP = 5;
 const HW_W = [.01, ...Array(3).fill(.04/3), ...Array(3).fill(.20/3), ...Array(3).fill(.33/3), ...Array(3).fill(.25/3), ...Array(3).fill(.15/3), ...Array(4).fill(.02/4)];
@@ -1016,7 +1052,7 @@ function calibrate(inp, fTab) {
   const k = F(n), rs = P.rho * sigma_log_k;
   for (let i = 0; i < n; i++) k[i] = P.mean_k * Math.exp(rs * (lp[i] - P.mu_log_p) / P.sigma_log_p - rs * rs / 2);
   const meanp = sumw(pmf, p);
-  const epk = P.eps_p_k === null ? 0.019 / meanp : P.eps_p_k;
+  const epk = P.eps_p_k === null ? 0.019 / 0.01379 : P.eps_p_k;   // change 117: Table 4 column (1) divided by the sample mean PD, script lines 31 and 394
   // regulation
   const omega = omegaIRBA(p, P.LGD, P.M);
   // elasticities by risk group, lines 368-375
@@ -1068,6 +1104,12 @@ function calibrate(inp, fTab) {
   const wFB = Float64Array.from(b);
   const S = { p, lp, pmf, k, Omega: P.Omega, z_k_w: zkw, z_k_wp: 0, eps_kp: ekp, eps_pk: epkv, del, r: P.r, z_star: P.z_star,
               rec, post_liquid: P.post_liquid, mu, chi_H, xi_E, xi_H, alpha };
+  {   // change 118: Student-t shock fitted to F(z*) and E(v | v <= z*); xi_H = gH F (1 - (E sH + tH)) with F, E at the current threshold along the path
+    const fit = fitShock(P.z_star, P.F_z_star, P.E_z_z_star);
+    Object.assign(S, { nu_z: fit.nu, sig_z: fit.sig, dynF: false,   // change 119: externalities fixed along the path; isFinite(fit.nu) updates them (change 118)
+      F0: P.F_z_star, E0: P.E_z_z_star, gH: (1 + P.kappa_T) / mu,
+      sH: p.map(v => (1 + P.r) * (1 - (1 + epk) * v)), tH: p.map(v => rec * (1 + epk) * v - P.post_liquid) });
+  }
   const one = F(n).fill(1);
   let denom_min = Infinity; for (let i = 0; i < n; i++) denom_min = Math.min(denom_min, 1 - ekp[i] * epk);   // credit-response divisor 1 - eps_kp eps_pk
   return { P, S, denom_min, eps_p_k: epk, pmed, share, sigma_log_k, meanp, pdfk, kg, kmean, ksd,
@@ -1093,7 +1135,7 @@ function reformEffects(mode, S, w0, w1end, N, kStart, pStart) {   // kStart, pSt
   let k = Float64Array.from(k0), p = Float64Array.from(ps);
   const R = { k_hat: F(n), V_Bi: F(n), V_Ei: F(n), V_Hi: F(n), Wi: F(n), L: 0, E: 0, z: 0, mass_clipped: 0, newton_fail: 0, den_neg: 0, Xi: F(n), Ri: F(n) };   // Xi, Ri: diagnostic split of Wi (equal weights a[1] = a[2])
   const a = S.alpha, wpp = F(n), w1 = F(n), wp1 = F(n);
-  const buf = () => F(n), w_q = buf(), wp_q = buf(), wh_q = buf(), wph_q = buf(), zkw = buf(), ekp = buf(), epk = buf(), del = buf(), xiH = buf(), xiE = buf();
+  const buf = () => F(n), w_q = buf(), wp_q = buf(), wh_q = buf(), wph_q = buf(), zkw = buf(), ekp = buf(), epk = buf(), del = buf(), xiH = buf(), xiE = buf(), sH = buf(), tH = buf();
   const lastdy = buf(); R.fail_mass = F(n);
   const k_hat = buf(), wh_B = buf(), lq = buf(), q = buf(), s_w1 = buf(), s_wp1 = buf(), y = buf();
   let Ksum0 = 0, KP0 = 0; for (let i = 0; i < n; i++) { Ksum0 += pmf[i] * k0[i]; KP0 += pmf[i] * k0[i] * ps[i]; }
@@ -1105,7 +1147,7 @@ function reformEffects(mode, S, w0, w1end, N, kStart, pStart) {   // kStart, pSt
       const j = J[i], t = T[i], ip = (v) => v[j] + (v[j+1] - v[j]) * t;
       w_q[i] = ip(w0) + e0 * ip(wh); wp_q[i] = ip(wp0) + e0 * ip(wph); wh_q[i] = ip(wh); wph_q[i] = ip(wph);
       if (lq[i] > lpHi || lq[i] < lpLo) { wp_q[i] = outSlope(w0, lq[i]) + e0 * outSlope(wh, lq[i]); wph_q[i] = outSlope(wh, lq[i]); }
-      zkw[i] = ip(S.z_k_w); ekp[i] = ip(S.eps_kp); epk[i] = ip(S.eps_pk); del[i] = ip(S.del); xiH[i] = ip(S.xi_H); xiE[i] = ip(S.xi_E);
+      zkw[i] = ip(S.z_k_w); ekp[i] = ip(S.eps_kp); epk[i] = ip(S.eps_pk); del[i] = ip(S.del); xiH[i] = ip(S.xi_H); xiE[i] = ip(S.xi_E); if (S.dynF) { sH[i] = ip(S.sH); tH[i] = ip(S.tH); }
     }
     if (mode === 'firstorder') {
       for (let i = 0; i < n; i++) { k_hat[i] = k[i] * (wh_q[i] * zkw[i] + wph_q[i] * S.z_k_wp) / (1 - ekp[i] * epk[i]); wh_B[i] = wh_q[i]; }
@@ -1134,11 +1176,16 @@ function reformEffects(mode, S, w0, w1end, N, kStart, pStart) {   // kStart, pSt
       for (let i = 0; i < n; i++) { k_hat[i] = N * k[i] * (Math.exp(y[i]) - 1); wh_B[i] = N * (s_w1[i] - w_q[i]); }
     }
     // E_hat, L_hat, z_hat, V_hat (competitive)
-    let E = 0, L = 0, D = 0, Ks = 0, KP = 0, VB = 0, VE = 0, VH = 0;
+    let E = 0, L = 0, D = 0, Ks = 0, KP = 0, VB = 0, VE = 0, VH = 0, chiH = S.chi_H;
+    if (mode !== 'firstorder' && S.dynF) {   // change 118: F and E(v | v <= z) at the current threshold z* + z (reform_effects.m)
+      const sh = shock(S.z_star + R.z, S.nu_z, S.sig_z);
+      for (let i = 0; i < n; i++) xiH[i] += S.gH * (sh.F * (1 - (sh.Ec * sH[i] + tH[i])) - S.F0 * (1 - (S.E0 * sH[i] + tH[i])));
+      chiH = S.chi_H * sh.F / S.F0;
+    }
     for (let i = 0; i < n; i++) {
       const Ei = S.Omega * (k[i] * wh_q[i] + k_hat[i] * (w_q[i] + wp_q[i] * p[i] * epk[i]));
       E += pmf[i] * Ei; L += pmf[i] * k_hat[i]; D += del[i] * k_hat[i] * pmf[i]; Ks += k[i] * pmf[i]; KP += k[i] * p[i] * pmf[i];
-      const vE = -S.mu * xiE[i] * k_hat[i] - S.mu * wh_B[i] * k[i], vH = -S.mu * (S.chi_H * Ei + xiH[i] * k_hat[i]);
+      const vE = -S.mu * xiE[i] * k_hat[i] - S.mu * wh_B[i] * k[i], vH = -S.mu * (chiH * Ei + xiH[i] * k_hat[i]);
       R.k_hat[i] += c * k_hat[i]; R.V_Ei[i] += c * vE; R.V_Hi[i] += c * vH; R.Wi[i] += c * (a[1] * vE + a[2] * vH);
       R.Xi[i] += c * a[1] * S.mu * k_hat[i] * (w_q[i] - xiE[i] - xiH[i]);   // exact-form term: (mu/3)(pi - b(p)) dk
       R.Ri[i] += c * a[1] * S.mu * (k[i] * wh_q[i] + k_hat[i] * wp_q[i] * p[i] * epk[i] - k[i] * wh_B[i]);   // mechanical residual: schedule change + slope term - own-weight change
@@ -1169,7 +1216,7 @@ function reformEffects(mode, S, w0, w1end, N, kStart, pStart) {   // kStart, pSt
   return R;
 }
 
-const api = { calibrate, reformEffects, DEFAULTS, TABLE5_ZETA, SIMPLE, normcdf, norminv };
+const api = { calibrate, reformEffects, DEFAULTS, TABLE5_ZETA, SIMPLE, normcdf, norminv, shock };
 if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.RWEngine = api;
 })(typeof window !== 'undefined' ? window : this);
 </script>
@@ -1177,8 +1224,8 @@ if (typeof module !== 'undefined' && module.exports) module.exports = api; else 
 <script>
 (function () {
 'use strict';
-const NAMES = { fed: 'Fed proposal', sa: 'Standardized approach', u65: 'Uniform 65%', u95: 'Uniform 95%', u100: 'Uniform 100%', flat: 'Best flat (82%)', ig2: 'Best two ratings (62% / 117%)', lin: 'Best linear', iso: 'Best isoelastic', fb: 'Optimal schedule' };
-const LABEL = { lin: 'Best linear, <span class="nwf"><i>ω</i> = 0.69 + 9.58 <i>p</i></span>', iso: 'Best isoelastic, <span class="nwf"><i>ω</i> = 1.92 <i>p</i><sup>0.15</sup></span>', ig2: 'Best two ratings <span class="nwf">(62% / 117%)</span>' };   // fixed markup, set as HTML
+const NAMES = { fed: 'Fed proposal', sa: 'Standardized approach', u65: 'Uniform 65%', u95: 'Uniform 95%', u100: 'Uniform 100%', flat: 'Best flat (80%)', ig2: 'Best two ratings (64% / 109%)', lin: 'Best linear', iso: 'Best isoelastic', fb: 'Optimal schedule' };
+const LABEL = { lin: 'Best linear, <span class="nwf"><i>ω</i> = 0.69 + 9.50 <i>p</i></span>', iso: 'Best isoelastic, <span class="nwf"><i>ω</i> = 1.62 <i>p</i><sup>0.12</sup></span>', ig2: 'Best two ratings <span class="nwf">(64% / 109%)</span>' };   // fixed markup, set as HTML
 const label = r => LABEL[r] || NAMES[r];
 const ORDER = ['fed', 'sa', 'u65', 'u95', 'u100', 'flat', 'ig2', 'lin', 'iso', 'fb'];
 const GROUPS = ['AAA to AA−', 'A+ to A−', 'BBB+ to BB−', 'Below BB−'];
@@ -1198,9 +1245,15 @@ function workerMain() {
   const E = self.RWEngine;
   self.onmessage = e => { const m = e.data; if (m.type === 'init') { fTab = m.fTab; return; } latest = m.id; setTimeout(() => run(m), 0); };
   const LIN = ['L', 'E', 'z', 'V_E', 'V_H', 'W'], VEC = ['k_hat', 'Wi', 'V_Ei', 'V_Hi'];
+  function pbarEnd(R, S, fo) {   // loan-weighted average PD after the reform; first order: p + p eps_pk k_hat / k
+    let num = 0;
+    for (let i = 0; i < S.p.length; i++) num += S.pmf[i] * (fo ? S.p[i] * (1 + S.eps_pk[i] * R.k_hat[i] / S.k[i]) : R.p[i]);
+    return num;
+  }
+  function pbarStart(S) { let num = 0; for (let i = 0; i < S.p.length; i++) num += S.pmf[i] * S.p[i]; return num; }
   function evalR(C, r, m) {
     const S = C.S, w0 = C.schedules.irba, w1 = C.schedules[r];
-    if (m.method === 'fo') return E.reformEffects('firstorder', S, w0, w1, 1);
+    if (m.method === 'fo') { const F1 = E.reformEffects('firstorder', S, w0, w1, 1); F1.pbar = pbarEnd(F1, S, true); return F1; }
     const A = E.reformEffects('largereform', S, w0, w1, m.N);
     const B = E.reformEffects('largereform', S, w0, w1, m.N / 2);   // N is even
     const o = Object.assign({}, A);
@@ -1208,11 +1261,12 @@ function workerMain() {
     VEC.forEach(f => o[f] = A[f].map((v, i) => 2 * v - B[f][i]));
     o.newton_fail = A.newton_fail + B.newton_fail; o.mass_clipped = Math.max(A.mass_clipped, B.mass_clipped); o.den_neg = A.den_neg + B.den_neg;
     o.fail_mass = A.fail_mass.map((v, i) => v || B.fail_mass[i]);
+    o.pbar = 2 * pbarEnd(A, S, false) - pbarEnd(B, S, false);   // loan-weighted average PD after the reform, extrapolated like the aggregates
     return o;
   }
   function pick(R, C, r) {
-    const Fz = C.P.F_z_star, az = E.norminv(Fz), sz = (1 - C.P.z_star) / (-az);   // aggregate shock normal with mean 1 through (z*, F(z*)), script line 1008
-    const o = { E: 100 * R.E / C.E0, L: 100 * R.L / C.L0, z: R.z, dP: E.normcdf(az + R.z / sz) - Fz, V_E: R.V_E, V_H: R.V_H, W: R.W, nf: R.newton_fail || 0, clip: R.mass_clipped || 0, den: R.den_neg || 0 };
+    const Fz = C.P.F_z_star;   // change 118: Student-t aggregate shock, shock_t.m
+    const o = { E: 100 * R.E / C.E0, L: 100 * R.L / C.L0, z: R.z, dP: E.shock(C.P.z_star + R.z, C.S.nu_z, C.S.sig_z).F - Fz, pbar0: pbarStart(C.S), pbar1: R.pbar, dPbar: 100 * (R.pbar - pbarStart(C.S)), V_E: R.V_E, V_H: R.V_H, W: R.W, nf: R.newton_fail || 0, clip: R.mass_clipped || 0, den: R.den_neg || 0 };
     const S = C.S; let fm = 0, plo = Infinity, phi = 0;
     if (R.fail_mass) R.fail_mass.forEach((v, i) => { if (v) { fm += S.pmf[i]; plo = Math.min(plo, S.p[i]); phi = Math.max(phi, S.p[i]); } });
     o.failMass = fm; o.failLo = plo; o.failHi = phi;
@@ -1255,7 +1309,7 @@ function workerMain() {
 const zq = [0.01, 0.25, 0.50, 0.75, 0.99].map(normInv), qlp = [-9.210, -6.725, -5.547, -4.382, -1.609];
 const SIG0 = zq.reduce((s, z, i) => s + z * qlp[i], 0) / zq.reduce((s, z) => s + z * z, 0);
 const DEF = { LGD: 0.45, M: 5, mu_log_p: -5.519, sigma_log_p: SIG0, mean_k: 9728, mu_log_k_eur: 14.767, rho: -0.3,
-              eps_p_k: null, Omega: 0.08, alpha_H: 1, S_IG: 0.57, kappa_T: 0.3, F_z_star: 0.05, r: 0.0468, post_liquid: 0.1965, zu: -0.349, eku: -0.089, z0: T5[0], z1: T5[1], z2: T5[2], z3: T5[3], e0: 0, e1: 0, e2: -0.042, e3: 0, L_tot: 1078 };
+              eps_p_k: null, Omega: 0.08, alpha_H: 1, S_IG: 0.57, kappa_T: 0.3, F_z_star: 0.05, r: 0.0468, post_liquid: 0.1965, zu: -0.349, eku: -0.089, z0: T5[0], z1: T5[1], z2: T5[2], z3: T5[3], e0: 0, e1: 0, e2: -0.042, e3: 0 };
 const state = { inp: {}, epsAuto: true, het: false, reform: 'fed', method: 'lr', N: 10 };
 let baseKey = null;
 
@@ -1288,9 +1342,7 @@ document.querySelectorAll('.ctl[data-key]').forEach(el => {
 const HELP = {
   calc: '<p><b>Approximation.</b> Linear approximation around the current IRBA schedule. Welfare scales one‑for‑one with the size of the reform.</p><p><b>Full simulation.</b> The reform is applied in <i>N</i> small steps, and at each step every loan adjusts its credit and default risk. Results are extrapolated to infinitely many steps.</p>',
   best: 'Best schedules keep the parameters that maximize welfare at the baseline calibration, also under changed assumptions.',
-  ent: 'Change in the total net income of borrowing firms, in € million. It combines the profit from the change in credit and the change in loan rates that pass on the banks’ equity cost. Scaled to total corporate credit in the assumptions.',
-  bail: 'Change in the expected cost of bank bailouts borne by taxpayers, in € million, including the deadweight cost of raising the funds. More bank equity lowers it; more lending to risky borrowers raises it.',
-  L_tot: 'Total corporate lending the reforms apply to. Scales the euro totals; the percentages stay the same. Baseline €1,078 billion, bank lending to domestic non-financial firms excluding real estate (Bundesbank banking statistics, 2026Q3).',
+  cbr: '<p>Cents of firm net income lost per euro of expected bailout cost saved. A ratio of 52% means firms lose €0.52 for every €1 of bailout cost saved. The ratio is the marginal value of public funds (MVPF) of Hendren and Sprung‑Keyser (2020) for a reform that raises public revenue, as in Section V of Hahn, Hendren, Metcalfe and Sprung‑Keyser (2026). Lower values are better.</p><p>Example: reforms A and B each save €1 billion of bailout costs. A costs firms €100 million (10%) and B costs them €200 million (20%), so A is better.</p><p>Firm net income includes the equity cost banks pass on through loan rates. Bailout costs include the deadweight cost of public funds. In the full simulation, a small reform starting from the optimal schedule has a ratio of 100%. For a reform that raises bailout costs and firm net income, the ratio is firm net income gained per added bailout cost, and higher values are better.</p><p>Hendren, N. and B. Sprung‑Keyser (2020), “A Unified Welfare Analysis of Government Policies,” <i>Quarterly Journal of Economics</i>.<br>Hahn, R. W., N. Hendren, R. D. Metcalfe and B. Sprung‑Keyser (2026), “A Welfare Analysis of Policies Impacting Climate Change,” <i>American Economic Review</i>.</p>',
   mu_log_p: 'Average log probability of default across loans. Baseline −5.52, a median PD of about 0.4%, from the German credit registry.',
   sigma_log_p: 'Dispersion of default risk across loans. Baseline 1.64, fitted to the 1st to 99th percentiles of log PD in the German credit registry.',
   mean_k: 'Average loan size. Baseline 9,728, that is EUR 9.7 million.',
@@ -1302,7 +1354,7 @@ const HELP = {
   S_IG: 'Share of investment‑grade borrowers, who receive 65% under the Fed proposal. Baseline 57% (Vanhaverbeke, Balsmeier and Doherr, 2022).',
   zu: 'How strongly banks cut credit when a loan’s risk weight rises. For example, −0.35 means a 10 percentage point higher risk weight lowers the supply of corporate credit by 3.5%. Baseline −0.349, estimated from the 2020 SME Supporting Factor reform in Germany. Estimates for France range from −0.23 to −0.45 (Fraisse, Lé and Thesmar, 2020).',
   eku: 'Percent change in credit supply when the borrower’s PD rises by 1%, at a given risk weight. Baseline −0.089, estimated from differences in PD estimates across banks lending to the same firm.',
-  eps_p_k: 'Percent change in the borrower’s PD when credit rises by 1%. Baseline 1.36, from the estimate that 10% more credit raises the PD by 0.19 percentage points (German bank levy, 2011), divided by the mean PD.',
+  eps_p_k: 'Percent change in the borrower’s PD when credit rises by 1%. Baseline 1.38, from the estimate that 10% more credit raises the PD by 0.19 percentage points (German bank levy, 2011), divided by the mean PD of 1.38% in the data.',
   het: 'Separate elasticities for the four rating groups AAA to AA−, A+ to A−, BBB+ to BB−, and below BB−.',
   kappa_T: 'Social cost of each euro of bailout beyond the euro itself. With 0.30, a €10 billion bailout costs society €13 billion. €10 billion pass from taxpayers to the bank’s depositors, and €3 billion are lost. The loss comes from the taxes that raise the money, which discourage work and investment, and from the cost of resolving the failed bank. Baseline 0.30.',
   F_z_star: 'Probability that a macroeconomic shock triggers a bailout. Baseline 5%.',
@@ -1457,6 +1509,7 @@ const fmt = (v, d) => Number.isFinite(v) ? (v >= 0 ? '+' : '−') + Math.abs(v).
 const num = v => Math.round(v).toLocaleString('en-US');
 // Lucide icons (lucide-static 0.460.0: landmark, hand-coins, shield-alert, scale), ISC licence
 const KPI_ICONS = {
+  risk: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></svg>',
   firms: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></svg>',
   taxpayers: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
   equity: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>',
@@ -1464,27 +1517,34 @@ const KPI_ICONS = {
   bailout: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>',
   welfare: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>'
 };
-const ICON_ORDER = ['equity', 'credit', 'bailout', 'firms', 'taxpayers'];
-let F_BASE = 0.05, KMEAN = 9716;   // KMEAN: model mean credit per loan, EUR 1,000 (main message)
-const EURM = () => (state.inp.L_tot || DEF.L_tot) * 1e3 / KMEAN;   // EUR 1,000 per loan -> EUR million in total: loans = L_tot (EUR bn) / mean credit per loan
-const fmtM = v => Number.isFinite(v) ? (v >= 0 ? '+' : '−') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : 'n/a';   // F(z*) from the inputs (script line 1007); bailout change dP from the normal shock (worker pick)
+
+let F_BASE = 0.05;   // F(z*) from the inputs (script line 1007); bailout change dP from the normal shock (worker pick)
+const cbr = x => { const r = -x.V_E / x.V_H; return Number.isFinite(r) ? (r < 0 ? '−' : '') + (100 * Math.abs(r)).toFixed(0) + '%' : 'n/a'; };   // cost-benefit ratio (MVPF): firm net income lost per euro of fiscal benefit
+const cbrUnit = x => x.V_H >= 0 ? (x.V_E <= 0 ? 'firm income lost / bailout cost saved' : 'firms and taxpayers both gain')
+  : (x.V_E >= 0 ? 'firm income gained / added bailout cost' : 'firms and taxpayers both lose');
+const L_TOT = 1078;   // total corporate credit, EUR billion (Bundesbank banking statistics, 2026Q3): EUR 1,000 per loan x L_TOT*1e3/mean credit per loan = EUR million
+const eurM = v => (v < 0 ? '−' : '+') + '€' + Math.abs(v).toFixed(1) + 'm';
 const relP = d => Number.isFinite(d) ? `Percent change: ${fmt(100 * d / F_BASE, 2)}% of the ${+(100 * F_BASE).toFixed(1)}% bailout probability` : '';
 const methodText = q => q.method === 'fo' ? 'approximation' : 'full simulation';
 let lastTiles = null;
 function renderMain(m) {
   const R = m.R;
   const q = m.req, bad = R.unstable, show = (v, d) => bad ? 'invalid' : fmt(v, d);
-  F_BASE = m.Fz; KMEAN = m.kModelMean; if (popFor && popFor.closest('#tiles')) closePop();
+  F_BASE = m.Fz; if (popFor && popFor.closest('#tiles')) closePop();
   const pct = v => (100 * v).toFixed(2) + '%';
   $('restitle').innerHTML = label(q.reform);
   $('ressub').textContent = `Aggregate effects of moving from IRBA (${methodText(q)}).`;
-  const tiles = [['Equity', show(R.E, 2), '% of required bank equity'], ['Corporate credit', show(R.L, 2), '% of corporate credit'], ['Bailout probability', show(100 * R.dP, 3), bad ? 'pp' : `pp, from ${pct(F_BASE)} to ${pct(F_BASE + R.dP)}`], ['Entrepreneurs’ net income', bad ? 'invalid' : fmtM(EURM() * R.V_E), '€ million per year'], ['Taxpayers’ bailout cost', bad ? 'invalid' : fmtM(-EURM() * R.V_H), '€ million per year']];
+  const tiles = [
+    { k: 'Corporate credit', v: show(R.L, 2), u: '% of corporate credit', icon: 'credit' },
+    { k: 'Equity', v: show(R.E, 2), u: '% of required bank equity', icon: 'equity' },
+    { k: 'Bailout probability', v: show(100 * R.dP, 3), u: bad ? 'pp' : `pp, from ${pct(F_BASE)} to ${pct(F_BASE + R.dP)}`, icon: 'bailout', title: bad ? '' : relP(R.dP) },
+    { k: 'Cost-benefit ratio', v: bad ? 'invalid' : cbr(R), u: bad ? '' : cbrUnit(R), icon: 'welfare', help: 'cbr' }];
   const host = $('tiles'); host.textContent = '';
   const step = lastTiles && (lastTiles.q.reform !== q.reform || lastTiles.q.method !== q.method || lastTiles.q.N !== q.N);   // a new reform, calculation or N: highlight the values that changed
-  tiles.forEach(([k, v, u], j) => { const d = document.createElement('div'); if (j === 2 && !bad) d.title = relP(R.dP);
-    const a = document.createElement('div'); a.className = 'k'; a.textContent = k; a.insertAdjacentHTML('afterbegin', KPI_ICONS[ICON_ORDER[j]]); const b = document.createElement('div'); b.className = 'v' + (step && lastTiles.v[j] !== v ? ' flash' : ''); b.textContent = v;
-    const c = document.createElement('div'); c.className = 'u'; c.textContent = u; if (j === 3) a.append(qBtn('ent')); if (j === 4) a.append(qBtn('bail')); d.append(a, b, c); host.append(d); });
-  lastTiles = { q, v: tiles.map(t => t[1]) };
+  tiles.forEach((t, j) => { const d = document.createElement('div'); if (t.title) d.title = t.title;
+    const a = document.createElement('div'); a.className = 'k'; a.textContent = t.k; a.insertAdjacentHTML('afterbegin', KPI_ICONS[t.icon]); const b = document.createElement('div'); b.className = 'v' + (step && lastTiles.v[j] !== t.v ? ' flash' : ''); b.textContent = t.v;
+    const c = document.createElement('div'); c.className = 'u'; c.textContent = t.u; if (t.help) a.append(qBtn(t.help)); d.append(a, b, c); host.append(d); });
+  lastTiles = { q, v: tiles.map(t => t.v) };
   const w = [];
   if (bad) w.push('Invalid at these inputs: ' + R.reasons.join('; ') + '.');
   $('warn').hidden = !w.length; $('warn').textContent = w.join(' ');
@@ -1492,7 +1552,6 @@ function renderMain(m) {
   $('kstats').textContent = `Model credit per loan, EUR 1,000: mean ${num(m.kModelMean)}, SD ${num(m.kModelSd)}. SD of log credit ${m.sigma_log_k.toFixed(3)}`;
   if (state.epsAuto) ctls.eps_p_k.set(m.eps_p_k);
   document.querySelectorAll('.fz').forEach(e => e.textContent = +(100 * m.Fz).toFixed(1));
-  document.querySelectorAll('.ltot').forEach(e => e.textContent = Math.round(state.inp.L_tot || DEF.L_tot).toLocaleString('en-US'));
   drawCharts(m); if (!$('calsec').hidden) drawCal(m);
   rows = {}; rows[q.reform] = R; renderTable();
 }
@@ -1502,10 +1561,10 @@ function renderTable() {
   ORDER.forEach(r => {
     const tr = document.createElement('tr'); if (r === shown.reform) tr.className = 'sel'; else if (!rows[r]) tr.className = 'pend';
     tr.tabIndex = 0; tr.addEventListener('click', () => choose(r)); tr.addEventListener('keydown', e => { if (e.key === 'Enter') choose(r); });
-    const x = rows[r], cells = x ? [fmt(x.E, 2), fmt(x.L, 2), fmt(100 * x.dP, 3), fmtM(EURM() * x.V_E), fmtM(-EURM() * x.V_H)] : ['…', '…', '…', '…', '…'];
+    const x = rows[r], cells = x ? [fmt(x.E, 2), fmt(x.L, 2), fmt(100 * x.dP, 3), cbr(x)] : ['…', '…', '…', '…'];
     const td0 = document.createElement('td'); td0.innerHTML = label(r);
     tr.append(td0);
-    if (x && x.unstable) { const td = document.createElement('td'); td.colSpan = 5; td.className = 'unstable'; td.textContent = 'Invalid at these inputs: ' + x.reasons.join('; '); tr.append(td); }
+    if (x && x.unstable) { const td = document.createElement('td'); td.colSpan = 4; td.className = 'unstable'; td.textContent = 'Invalid at these inputs: ' + x.reasons.join('; '); tr.append(td); }
     else cells.forEach((c, j) => { const td = document.createElement('td'); td.textContent = c; if (j === 2 && x) td.title = relP(x.dP); tr.append(td); });
     tb.append(tr);
   });
@@ -1537,11 +1596,15 @@ function drawCharts(m) {
   lineChart($('ch_w'), P, wser,
     { scale: 100, suffix: '%', tfmt: v => (100 * v).toFixed(1) + '%', cuts: true, x: PX, ytitle: 'Risk weight ω', anim: from('ch_w'), legendExtra: $('cmpwith') });
   sizeCmp();
+  $('vtot').textContent = '';
   if (m.R.unstable) { ['ch_k', 'ch_v'].forEach(id => figMsg(id, 'Figure omitted: the reform is invalid at these inputs.')); return; }
+  { const sc = L_TOT * 1e3 / m.kModelMean; let tc = 0, tv = 0, th = 0;   // totals over all loans, EUR million per year
+    for (let i = 0; i < m.p.length; i++) { const c = -m.mu * m.xiE[i] * m.R.k_hat[i]; tc += m.pmf[i] * c; tv += m.pmf[i] * m.R.V_Ei[i]; th += m.pmf[i] * m.R.V_Hi[i]; }
+    $('vtot').textContent = ` Totals for corporate credit of €${L_TOT.toLocaleString('en-US')} billion: credit supply ${eurM(sc * tc)}, mechanical cost passed through ${eurM(sc * (tv - tc))}, fiscal benefit ${eurM(sc * th)} per year.`; }
   const kser = [{ name: m.req.method === 'fo' ? NAMES[sel] + ', approximation' : NAMES[sel] + ', full simulation', color: 'var(--accent)', y: I.map(i => 100 * m.R.k_hat[i] / m.k[i]) }];
   if (m.req.method !== 'fo') kser.unshift({ name: 'Approximation', color: 'var(--base)', dash: '6 3', y: I.map(i => 100 * m.k_hat_fo[i] / m.k[i]) });
   lineChart($('ch_k'), P, kser, { tfmt: v => v.toFixed(2) + '%', zero: true, x: PX, ytitle: 'Change in corporate credit (%)', anim: from('ch_k') });
-  lineChart($('ch_v'), P, [{ name: 'Entrepreneurs’ net income', color: 'var(--s1)', y: I.map(i => m.R.V_Ei[i]), dash: '6 3' }, { name: 'Taxpayers’ bailout cost', color: 'var(--s2)', y: I.map(i => -m.R.V_Hi[i]), dash: '1.5 2.5' }],
+  lineChart($('ch_v'), P, [{ name: 'Firm net income', color: 'var(--s1)', y: I.map(i => m.R.V_Ei[i]), dash: '6 3' }, { name: 'Fiscal benefit', color: 'var(--s2)', y: I.map(i => m.R.V_Hi[i]), dash: '1.5 2.5' }],
     { tfmt: v => v.toFixed(3), zero: true, x: PX, ytitle: 'EUR 1,000 per loan', anim: from('ch_v') });
 }
 function drawCal(m) {
