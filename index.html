@@ -656,8 +656,8 @@ button.q::after { content: ""; position: absolute; inset: -6px }   /* tap area l
 .pop p { margin: 0 } .pop p + p { margin-top: 6px } .pop b { color: var(--ink); font-weight: 600 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important } }
 /* first visit: only the header and the reform choice; the results unfold once a reform is chosen (links with a reform open directly) */
-body.intro .c-ass, body.intro #status, body.intro main > section.res, body.intro #tabbar, body.intro main > [role=tabpanel] { display: none !important }
-body.intro #reform { color: var(--accent) }
+html.intro .c-ass, html.intro #status, html.intro main > section.res, html.intro #tabbar, html.intro main > [role=tabpanel] { display: none !important }
+html.intro #reform { color: var(--accent) }
 body.reveal main > section.res, body.reveal #tabbar, body.reveal main > [role=tabpanel] { animation: unfold .4s ease-out }
 @keyframes unfold { from { opacity: 0; transform: translateY(8px) } }
 @media (prefers-reduced-motion: reduce) { body.reveal main > * { animation: none !important } }
@@ -697,6 +697,8 @@ img { max-width: 100% }
 </style>
 </head>
 <body>
+<script>if (!new URLSearchParams(location.search).has("reform")) document.documentElement.classList.add("intro");   // before first paint: a first visit shows only the reform choice</script>
+
 <div class="wrap">
 <div class="strip" id="strip" aria-hidden="true"><span class="logo"></span><span>Risk Weight Simulator</span></div>
 <header>
@@ -780,7 +782,7 @@ img { max-width: 100% }
   <div class="ctrlbar">
     <div class="ctl c-ref"><label for="reform">Reform</label>
       <select id="reform">
-        <option value="" disabled hidden>Choose a reform to get started</option>
+        <option value="" disabled hidden selected>Choose a reform to get started</option>
         <option value="fed">Fed proposal (65% / 100%)</option>
         <option value="sa">Current standardized approach</option>
         <option value="u65">Uniform 65%</option>
@@ -1430,7 +1432,7 @@ function reset() {
 }
 document.querySelectorAll('[data-h]').forEach(b => b.addEventListener('click', () => { state.het = b.dataset.h === '1'; syncHet(); schedule(); }));
 $('reset').addEventListener('click', () => { reset(); try { if (location.search) history.replaceState(null, '', location.pathname); } catch (e) {} setSide(false); $('calsec').hidden = true; document.querySelectorAll('aside details').forEach(d => d.open = false); schedule(); });
-function reveal() { const b = document.body; if (!b.classList.contains('intro')) return; b.classList.remove('intro'); b.classList.add('reveal'); setTimeout(() => b.classList.remove('reveal'), 450); stackTabbar(); if (mainMsg) drawCharts(mainMsg); }
+function reveal() { const b = document.body, h = document.documentElement; if (!h.classList.contains('intro')) return; h.classList.remove('intro'); b.classList.add('reveal'); setTimeout(() => b.classList.remove('reveal'), 450); stackTabbar(); if (mainMsg) drawCharts(mainMsg); }
 $('reform').addEventListener('change', e => { state.reform = e.target.value; reveal(); schedule(); });
 document.querySelectorAll('[data-m]').forEach(b => b.addEventListener('click', () => {
   state.method = b.dataset.m; document.querySelectorAll('[data-m]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); schedule(); }));
@@ -1741,7 +1743,7 @@ function lineChart(host, P, series, o) {
 }
 let rz = null, lastW = 0; new ResizeObserver(es => { const w = Math.round(es[0].contentRect.width); if (w === lastW) return; lastW = w; stackTabbar(); clearTimeout(rz); rz = setTimeout(() => { if (mainMsg) { drawCharts(mainMsg); if (!$('calsec').hidden) drawCal(mainMsg); } }, 150); }).observe(document.querySelector('main'));
 
-reset(); applyURL(); if (!new URLSearchParams(location.search).has('reform')) { document.body.classList.add('intro'); $('reform').value = ''; } send();
+reset(); applyURL(); if (!new URLSearchParams(location.search).has('reform')) { document.documentElement.classList.add('intro'); $('reform').value = ''; } else $('reform').value = state.reform; send();
 })();
 </script>
 <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "83331139b203419db6cbc0e5b720d35b"}'></script>
