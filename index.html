@@ -567,6 +567,8 @@ table.bk { border-collapse: collapse; width: 100%; font-variant-numeric: tabular
 .bk th:first-child, .bk td:first-child { text-align: left }
 .bk thead th { font-weight: 500; font-size: 17px; border-bottom: 0.75px solid var(--ink); vertical-align: bottom }
 .bk td { font-size: 18px }
+.bk th:not(:first-child), .bk td:not(:first-child) { width: 17% }   /* four number columns of equal width; Reform takes the rest */
+@media (min-width: 768px) { .bk thead th:not(:first-child) { white-space: normal } }   /* headers wrap so the number columns stay equal on narrow screens */
 body.side-open .bk th, body.side-open .bk td { padding: 8px 6px; font-size: 13.5px }
 body.side-open .best { display: block; margin-left: 0 }
 .bk tbody tr { cursor: pointer }
@@ -838,11 +840,10 @@ img { max-width: 100% }
   <section class="res tabsec">
     <p class="caption" id="cmpcap" style="margin:0 0 12px"><b>Table 1.</b> Aggregate effects of all reforms under the same assumptions and calculation. Select a row to show that reform.</p>
     <div class="cmpshow"><label for="cmpcol">Show</label><select id="cmpcol">
-      <option value="2" selected>Equity (%)</option><option value="3">Credit (%)</option><option value="4">Bailout probability (pp)</option>
+      <option value="2" selected>Bank equity (%)</option><option value="3">Corporate credit (%)</option><option value="4">Bailout probability (pp)</option>
       <option value="5">Cost-benefit ratio</option></select></div>
     <div class="tablewrap"><table class="bk" id="cmp" aria-describedby="cmpcap" data-col="2">
-      <thead><tr><th>Reform <button type="button" class="q" data-help="best" aria-label="Explain: best schedules" aria-expanded="false">i</button></th><th>Equity (%)</th><th>Credit (%)</th><th title="Change in the bailout probability, percentage points">Bailout prob. (pp)</th><th>Cost-benefit ratio <button type="button" class="q" data-help="cbr" aria-label="Explain: cost-benefit ratio" aria-expanded="false">i</button></th></tr></thead><tbody></tbody></table></div>
-    <p class="caption">Equity in percent of required bank equity, credit in percent of total corporate credit, bailout probability in percentage points from <span class="fz">5</span>%.</p>
+      <thead><tr><th>Reform <button type="button" class="q" data-help="best" aria-label="Explain: best schedules" aria-expanded="false">i</button></th><th>Bank equity (%)</th><th>Corporate credit (%)</th><th title="Change in the bailout probability, percentage points">Bailout prob. (pp)</th><th>Cost-benefit ratio</th></tr></thead><tbody></tbody></table></div>
   </section>
   </div>
   <div class="figs one" role="tabpanel" id="panel_credit" aria-labelledby="tab_credit" hidden>
@@ -1538,7 +1539,7 @@ function renderMain(m) {
   $('ressub').textContent = `Aggregate effects of moving from IRBA (${methodText(q)}).`;
   const tiles = [
     { k: 'Corporate credit', v: show(R.L, 2), u: '% of corporate credit', icon: 'credit' },
-    { k: 'Equity', v: show(R.E, 2), u: '% of required bank equity', icon: 'equity' },
+    { k: 'Bank equity', v: show(R.E, 2), u: '% of required bank equity', icon: 'equity' },
     { k: 'Bailout probability', v: show(100 * R.dP, 3), u: bad ? 'pp' : `pp, from ${pct(F_BASE)} to ${pct(F_BASE + R.dP)}`, icon: 'bailout', title: bad ? '' : relP(R.dP) },
     { k: 'Cost-benefit ratio', v: bad ? 'invalid' : cbr(R), u: bad ? '' : cbrUnit(R), icon: 'welfare', help: 'cbr' }];
   const host = $('tiles'); host.textContent = '';
